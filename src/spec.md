@@ -191,6 +191,19 @@ The backend stores:
   - Profile modals
   - Any other modal dialogs throughout the application
 
+## Fee Management Section Styling Requirements
+- Fee Management (FeesSection) must have completely solid, opaque backgrounds for all modals and detail boxes with zero transparency
+- All fee-related modals (Add Fee, Edit Fee, View Fee Details) must use fully solid backgrounds - solid white in light mode and solid dark gray in dark mode
+- Fee records section must display with premium, high-graphics design featuring:
+  - Solid backgrounds with no translucency
+  - Subtle shadow effects for depth and visual appeal
+  - Smooth gradient effects consistent with the app's premium theme
+  - Proper border-radius for modern appearance
+- Comprehensive verification that all FeesSection modals and forms display correctly with no translucency or overlapping artifacts
+- Visual consistency with the rest of the high-graphics interface throughout the Fee Management section
+- Ensure complete visual separation from dashboard background with no background bleed
+- Maintain readability and visual harmony across both light and dark modes in all fee-related components
+
 ## Students Section Details Panel Styling
 - Student details panel must have solid, opaque background that is visually distinct from the dashboard
 - Background should be solid white in light mode and solid dark gray in dark mode with no transparency
@@ -207,6 +220,7 @@ The backend stores:
 - Validate visual consistency across light and dark modes
 - Ensure proper backdrop overlays and z-index management for all modal dialogs
 - Test all interactive elements for proper visual feedback and styling
+- Special focus on Fee Management section to verify complete elimination of transparency issues
 
 ## Error Handling and Loading States
 - Error boundaries in App.tsx and Dashboard.tsx to catch rendering errors and display user-friendly fallback UI
