@@ -1,197 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Convert School Mitra to Progressive Web App with offline capabilities",
-  "projectName": "School Mitra",
+  "title": "Update footer to modern clean font style",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-19",
-      "text": "Implement Progressive Web App (PWA) functionality including service worker registration, offline caching strategy for static assets and API responses, and cache management for optimal performance",
+      "id": "REQ-31",
+      "text": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-pwa-request"
+          "msg-7"
         ],
         "quotes": [
-          "yes but i want in PWA APP FORM can you create",
-          "build"
+          "modern and clean please start building"
         ]
       },
       "acceptanceCriteria": [
-        "Service worker is registered and activated successfully",
-        "Static assets (HTML, CSS, JS, images) are cached on first load",
-        "Previously loaded data (students, fees, attendance, teachers) is accessible when offline",
-        "Network requests fall back to cached data when offline",
-        "Cache is updated when online to ensure fresh data"
+        "Footer text remains 'Built And Managed By TixtedEdits'",
+        "Font is changed from Pacifico to a modern sans-serif font like Inter, Poppins, or Montserrat",
+        "Text remains readable and professional looking",
+        "Gradient styling and layout are preserved"
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Create and configure web app manifest (manifest.json) with School Mitra branding, app name, description, theme colors, background color, display mode set to 'standalone', and start URL",
+      "id": "REQ-32",
+      "text": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "yes but i want in PWA APP FORM can you create"
+          "msg-7"
         ]
       },
       "acceptanceCriteria": [
-        "Manifest includes app name 'School Mitra'",
-        "Display mode is set to 'standalone' for app-like experience",
-        "Theme color and background color are configured",
-        "Manifest is properly linked in index.html",
-        "Start URL points to the root of the application"
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "Generate and configure PWA app icons in multiple sizes (192x192, 512x512) for installation on various devices, and create a favicon for browser tab display",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "Installable on devices (desktop and mobile)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "App icons are available in 192x192 and 512x512 sizes",
-        "Icons follow the School Mitra branding theme",
-        "Icons are referenced correctly in manifest.json",
-        "Favicon is visible in browser tabs",
-        "Icons display correctly when app is installed on devices"
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "text": "Add PWA install prompt component that detects when the app can be installed, displays a user-friendly install button or banner, handles the beforeinstallprompt event, and can be dismissed by the user",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "Installable on devices (desktop and mobile)",
-          "App-like experience with custom icon and splash screen"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Install prompt appears when app meets PWA criteria",
-        "User can trigger installation by clicking the install button",
-        "Prompt can be dismissed and doesn't reappear immediately",
-        "Prompt is hidden after successful installation",
-        "Works on both desktop and mobile browsers that support PWA"
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Configure splash screen for PWA with School Mitra branding including app icon, name, and background color that displays during app launch on mobile devices",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "App-like experience with custom icon and splash screen"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Splash screen displays School Mitra branding when app launches",
-        "Background color matches the app's theme",
-        "App icon is centered and properly sized on splash screen",
-        "Splash screen displays on both iOS and Android devices",
-        "Transition from splash screen to app is smooth"
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "text": "Implement offline fallback page that displays when users navigate to uncached pages while offline, with clear messaging about offline status and instructions to reconnect",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "Offline viewing of previously loaded data",
-          "When users go offline, they'll be able to view previously loaded data"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Offline page displays when accessing uncached routes while offline",
-        "Page clearly indicates the app is offline",
-        "Page provides helpful instructions for the user",
-        "Page maintains School Mitra branding and styling",
-        "Page automatically redirects when connection is restored"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "text": "Add meta tags to index.html for PWA support including viewport settings, theme-color for browser UI, apple-touch-icon for iOS devices, and mobile-web-app-capable tags",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "Installable on desktop and mobile devices"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Viewport meta tag is properly configured for mobile responsiveness",
-        "Theme-color meta tag matches the app's primary color",
-        "Apple-specific meta tags are present for iOS PWA support",
-        "Mobile web app capable tags enable full-screen mode on iOS",
-        "All PWA-related meta tags are present and valid"
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Test and verify that all existing School Mitra features (student management, fee tracking, attendance, teacher management, role-based authentication) work correctly in PWA mode both online and offline with cached data",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-user-pwa-request"
-        ],
-        "quotes": [
-          "I want same features like school mitra",
-          "When users go offline, they'll be able to view previously loaded data"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All features work in installed PWA mode",
-        "Previously loaded student data is viewable offline",
-        "Previously loaded fee records are accessible offline",
-        "Previously loaded attendance records can be viewed offline",
-        "Teacher management interface works in PWA mode for admins",
-        "Authentication state persists across PWA sessions",
-        "Role-based permissions function correctly in PWA mode"
+        "If Pacifico font is only used in footer, remove the Google Fonts import from index.html",
+        "If Pacifico is used elsewhere, keep the import but ensure it's not applied to the footer",
+        "Page load performance is not negatively impacted by unused font imports"
       ]
     }
   ],
   "constraints": [
-    "Must maintain all existing School Mitra features and functionality",
-    "Must preserve role-based access control (Admin with Internet Identity, Teacher with credentials)",
-    "Service worker must not interfere with Internet Identity authentication flow",
-    "PWA must work with the existing single-actor Motoko backend architecture",
-    "Must not modify immutable frontend paths: useInternetIdentity.ts, useActor.ts, main.tsx, components/ui/*"
+    "Do not change the footer text content",
+    "Preserve the gradient styling and overall footer layout",
+    "Ensure the new font is web-safe or properly imported"
   ],
   "nonGoals": [
-    "Full offline data entry with background sync (only viewing cached data offline)",
-    "Push notifications for new students or fee updates",
-    "Offline authentication for new users",
-    "App store distribution (iOS App Store, Google Play Store)",
-    "Native mobile app features like camera access or GPS",
-    "Offline-first database with local data persistence and conflict resolution"
+    "Changing footer text or copyright information",
+    "Modifying footer size, position, or color scheme",
+    "Adding new footer features or links"
   ],
   "imageRequirements": {
-    "required": [
-      "School Mitra app icon with education theme, clean modern design suitable for PWA installation (school-mitra-icon.dim_192x192.png)",
-      "School Mitra app icon in larger size for high-resolution displays and app stores (school-mitra-icon.dim_512x512.png)",
-      "School Mitra favicon for browser tabs, simple icon recognizable at small sizes (favicon.dim_32x32.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

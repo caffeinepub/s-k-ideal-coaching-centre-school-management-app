@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 15,
   "summary": "School management PWA app with multi-role authentication (Admin/Teacher) for managing students, fees, attendance, and teachers, with offline capabilities and installable app experience",
   "architectural_notes": [
     "Multi-role authentication system (Admin/Teacher)",
@@ -9,11 +9,11 @@
     "Login credential management system",
     "Progressive Web App (PWA) implementation with service worker",
     "Offline caching for previously loaded data",
-    "Installable app experience with web manifest"
+    "Installable app experience with web manifest",
+    "Activity audit log system tracking user actions with timestamps and actor attribution"
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- School Mitra app icon with education theme, clean modern design suitable for PWA installation (school-mitra-icon.dim_192x192.png)\n- School Mitra app icon in larger size for high-resolution displays and app stores (school-mitra-icon.dim_512x512.png)\n- School Mitra favicon for browser tabs, simple icon recognizable at small sizes (favicon.dim_32x32.png)",
   "existing_features": [
     {
       "id": "feature-replace-all-instances-of-s-k-ideal-coaching-centre-with-school-mitra-in-the-header-title-manifest-and-throughout-the-application",
@@ -214,6 +214,46 @@
         "REQ-26"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-implement-fee-deletion-functionality-allowing-both-teachers-and-admins-to-delete-fee-records-with-a-confirmation-dialog-before-deletion",
+      "title": "Implement fee deletion functionality allowing both Teachers and Admins to delete fee records with a confirmation dialog before deletion",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-activity-log-section-to-admin-dashboard-displaying-all-tracked-actions-with-timestamps-teacher-usernames-action-types-and-relevant-details-in-a-sortable-table-format",
+      "title": "Add Activity Log section to Admin dashboard displaying all tracked actions with timestamps, teacher usernames, action types, and relevant details in a sortable table format",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-footer-component-to-replace-current-text-with-built-and-managed-by-tixtededits-displayed-in-elegant-cursive-font-style-using-pacifico-or-similar-cursive-font-family",
+      "title": "Update Footer component to replace current text with 'Built And Managed By TixtedEdits' displayed in elegant cursive font style using Pacifico or similar cursive font family",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-pacifico-cursive-font-in-the-footer-component-with-a-modern-clean-font-family-such-as-inter-poppins-or-montserrat-while-keeping-the-text-built-and-managed-by-tixtededits-unchanged",
+      "title": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-or-update-the-pacifico-font-import-from-frontend-index-html-if-it-is-no-longer-used-elsewhere-in-the-application-after-the-footer-font-change",
+      "title": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -283,6 +323,26 @@
       "id": "AR-13",
       "summary": "Implement offline viewing of previously loaded data",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Enable Teachers and Admins to delete fee records with confirmation dialogs",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement Activity Audit Log for Admin to track all actions (student/fee/attendance/teacher changes) with timestamps showing which teacher performed each action",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Create Activity Audit Log feature in the backend to track all key actions including student additions/deletions, fee edits/deletions, attendance changes, and teacher additions with timestamps and the teacher who performed each action",
+      "reqIds": [
+        "REQ-28"
+      ],
       "status": "pending"
     }
   ],

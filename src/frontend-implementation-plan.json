@@ -1,226 +1,43 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Convert School Mitra to Progressive Web App with offline capabilities",
+  "title": "Update footer to modern clean font style",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Implement Progressive Web App (PWA) functionality including service worker registration, offline caching strategy for static assets and API responses, and cache management for optimal performance",
+      "id": "REQ-31",
+      "summary": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
       "acceptanceCriteria": [
-        "Service worker is registered and activated successfully",
-        "Static assets (HTML, CSS, JS, images) are cached on first load",
-        "Previously loaded data (students, fees, attendance, teachers) is accessible when offline",
-        "Network requests fall back to cached data when offline",
-        "Cache is updated when online to ensure fresh data"
+        "Footer text remains 'Built And Managed By TixtedEdits'",
+        "Font is changed from Pacifico to a modern sans-serif font like Inter, Poppins, or Montserrat",
+        "Text remains readable and professional looking",
+        "Gradient styling and layout are preserved"
       ],
       "file_operations": [
         {
-          "path": "frontend/public/service-worker.js",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Enhance service worker with comprehensive offline caching strategy: implement cache-first strategy for static assets (HTML, CSS, JS, images), network-first with cache fallback for API responses to backend, cache management with versioning to invalidate stale caches, and routes for offline fallback page when uncached pages are accessed offline. Ensure the service worker excludes Internet Identity authentication URLs from caching to prevent interference with the authentication flow."
+          "description": "Update the Footer component to use a modern sans-serif font (Inter, Poppins, or Montserrat) instead of Pacifico. Change the font-family className from 'font-pacifico' or similar cursive styling to a clean sans-serif font class. Keep the text 'Built And Managed By TixtedEdits', gradient styling, and overall layout unchanged."
         },
         {
-          "path": "frontend/src/registerServiceWorker.ts",
-          "operation": "create",
-          "description": "Create service worker registration utility that checks for service worker support, registers the service worker on page load, handles registration success and failure events, provides update notifications when a new service worker version is available, and logs registration status for debugging. Include logic to skip registration during development if needed."
-        },
-        {
-          "path": "frontend/src/main.tsx",
+          "path": "frontend/tailwind.config.js",
           "operation": "modify",
-          "description": "Import and call the service worker registration function after the React app mounts to ensure the service worker is registered and activated. Wrap the registration in a condition that checks for production mode or allows opt-in during development."
+          "description": "Review the Tailwind config's font family definitions. If Pacifico is defined and only used in the footer, consider removing it from the fontFamily configuration. If a modern font like Inter is not already available in the font stack, ensure it is properly configured or use the default sans-serif which typically includes system fonts."
         }
       ]
     },
     {
-      "id": "REQ-20",
-      "summary": "Create and configure web app manifest (manifest.json) with School Mitra branding, app name, description, theme colors, background color, display mode set to 'standalone', and start URL",
+      "id": "REQ-32",
+      "summary": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
       "acceptanceCriteria": [
-        "Manifest includes app name 'School Mitra'",
-        "Display mode is set to 'standalone' for app-like experience",
-        "Theme color and background color are configured",
-        "Manifest is properly linked in index.html",
-        "Start URL points to the root of the application"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/manifest.json",
-          "operation": "modify",
-          "description": "Update manifest.json with PWA-specific configurations: set name to 'School Mitra', short_name to 'School Mitra', add description explaining the app's purpose (student, fee, attendance, and teacher management), set display mode to 'standalone' for app-like experience, configure theme_color and background_color matching the School Mitra brand colors from the Tailwind config, set start_url to '/', add scope to '/', and ensure icons array references the generated PWA icons at frontend/public/assets/generated/school-mitra-icon.dim_192x192.png and frontend/public/assets/generated/school-mitra-icon.dim_512x512.png with correct sizes and types."
-        },
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Verify that the manifest.json link tag is present in the head section with the correct path to /manifest.json. Ensure the link has rel='manifest' attribute for proper PWA recognition by browsers."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Generate and configure PWA app icons in multiple sizes (192x192, 512x512) for installation on various devices, and create a favicon for browser tab display",
-      "acceptanceCriteria": [
-        "App icons are available in 192x192 and 512x512 sizes",
-        "Icons follow the School Mitra branding theme",
-        "Icons are referenced correctly in manifest.json",
-        "Favicon is visible in browser tabs",
-        "Icons display correctly when app is installed on devices"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/manifest.json",
-          "operation": "modify",
-          "description": "Wire the generated PWA icons into the manifest by updating the icons array to reference frontend/public/assets/generated/school-mitra-icon.dim_192x192.png (with size '192x192' and type 'image/png') and frontend/public/assets/generated/school-mitra-icon.dim_512x512.png (with size '512x512' and type 'image/png'). Ensure purpose is set to 'any maskable' for adaptive icon support on Android."
-        },
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Add link tags in the head section to reference the generated favicon at frontend/public/assets/generated/favicon.dim_32x32.png. Include both <link rel='icon' type='image/png' sizes='32x32' href='/assets/generated/favicon.dim_32x32.png'> and <link rel='shortcut icon' href='/assets/generated/favicon.dim_32x32.png'> for cross-browser compatibility."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Add PWA install prompt component that detects when the app can be installed, displays a user-friendly install button or banner, handles the beforeinstallprompt event, and can be dismissed by the user",
-      "acceptanceCriteria": [
-        "Install prompt appears when app meets PWA criteria",
-        "User can trigger installation by clicking the install button",
-        "Prompt can be dismissed and doesn't reappear immediately",
-        "Prompt is hidden after successful installation",
-        "Works on both desktop and mobile browsers that support PWA"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/usePWAInstall.ts",
-          "operation": "modify",
-          "description": "Enhance the PWA install hook to ensure it properly captures the beforeinstallprompt event, stores the deferred prompt for later use, tracks installation state, provides an install function that triggers the prompt and handles the user's choice, provides a dismiss function that hides the prompt and stores dismissal state in localStorage with a timestamp, and automatically hides the prompt after successful installation. Include logic to respect the dismissal state for a reasonable period (e.g., 7 days) before showing again."
-        },
-        {
-          "path": "frontend/src/components/PWAInstallPrompt.tsx",
-          "operation": "modify",
-          "description": "Enhance the PWA install prompt component to use the usePWAInstall hook, display the prompt card with School Mitra branding when the app is installable and not dismissed, provide both an 'Install App' button that triggers installation and a 'Dismiss' button that hides the prompt, show appropriate loading/success states during installation, automatically hide after successful installation, and include responsive design that works on mobile and desktop. Position the prompt unobtrusively (e.g., bottom of the screen or as a dismissible banner)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire the PWAInstallPrompt component into the App component by importing and rendering it after successful authentication and profile setup. Position it so it appears for authenticated users but doesn't interfere with the login flow or profile setup modal. Ensure it only renders when the user is authenticated to avoid showing the install prompt to unauthenticated users."
-        }
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "summary": "Configure splash screen for PWA with School Mitra branding including app icon, name, and background color that displays during app launch on mobile devices",
-      "acceptanceCriteria": [
-        "Splash screen displays School Mitra branding when app launches",
-        "Background color matches the app's theme",
-        "App icon is centered and properly sized on splash screen",
-        "Splash screen displays on both iOS and Android devices",
-        "Transition from splash screen to app is smooth"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/manifest.json",
-          "operation": "modify",
-          "description": "Ensure the manifest.json includes background_color and theme_color properties that define the splash screen appearance. The background_color will be used as the splash screen background on Android devices. Verify these colors match the School Mitra brand colors from the Tailwind config to ensure visual consistency. The icon referenced in the icons array (frontend/public/assets/generated/school-mitra-icon.dim_512x512.png) will be automatically centered on the splash screen by the browser."
-        },
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Add iOS-specific meta tags for splash screen configuration: <meta name='apple-mobile-web-app-capable' content='yes'> to enable full-screen mode, <meta name='apple-mobile-web-app-status-bar-style' content='default'> for status bar styling, and <link rel='apple-touch-icon' href='/assets/generated/school-mitra-icon.dim_192x192.png'> to set the app icon for iOS devices. These tags ensure the splash screen works correctly on iOS Safari when the app is installed to the home screen."
-        }
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "summary": "Implement offline fallback page that displays when users navigate to uncached pages while offline, with clear messaging about offline status and instructions to reconnect",
-      "acceptanceCriteria": [
-        "Offline page displays when accessing uncached routes while offline",
-        "Page clearly indicates the app is offline",
-        "Page provides helpful instructions for the user",
-        "Page maintains School Mitra branding and styling",
-        "Page automatically redirects when connection is restored"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/offline.html",
-          "operation": "create",
-          "description": "Create a standalone offline fallback HTML page that displays when users navigate to uncached routes while offline. Include School Mitra branding (app name, colors matching the theme), a clear message indicating the app is offline, instructions to check internet connection and try again, a 'Retry' button that attempts to reload the page, and inline CSS for styling (since external stylesheets may not be cached). Add JavaScript that periodically checks for network connectivity and automatically reloads when the connection is restored."
-        },
-        {
-          "path": "frontend/public/service-worker.js",
-          "operation": "modify",
-          "description": "Update the service worker fetch event handler to serve the offline.html page when a navigation request fails and the requested page is not in the cache. Implement logic that detects navigation requests (mode === 'navigate'), attempts to fetch from network, falls back to cache if network fails, and finally serves offline.html if neither network nor cache is available. Ensure offline.html itself is cached during the service worker install event so it's always available."
-        }
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "summary": "Add meta tags to index.html for PWA support including viewport settings, theme-color for browser UI, apple-touch-icon for iOS devices, and mobile-web-app-capable tags",
-      "acceptanceCriteria": [
-        "Viewport meta tag is properly configured for mobile responsiveness",
-        "Theme-color meta tag matches the app's primary color",
-        "Apple-specific meta tags are present for iOS PWA support",
-        "Mobile web app capable tags enable full-screen mode on iOS",
-        "All PWA-related meta tags are present and valid"
+        "If Pacifico font is only used in footer, remove the Google Fonts import from index.html",
+        "If Pacifico is used elsewhere, keep the import but ensure it's not applied to the footer",
+        "Page load performance is not negatively impacted by unused font imports"
       ],
       "file_operations": [
         {
           "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Verify and update the head section with all required PWA meta tags: viewport meta tag with width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes for mobile responsiveness; theme-color meta tag matching School Mitra's primary brand color from Tailwind config; apple-mobile-web-app-capable set to 'yes' for iOS full-screen mode; apple-mobile-web-app-status-bar-style set to 'default' or 'black-translucent'; apple-mobile-web-app-title set to 'School Mitra'; apple-touch-icon link pointing to frontend/public/assets/generated/school-mitra-icon.dim_192x192.png; and description meta tag with School Mitra's app description. Ensure all tags are present and properly formatted."
-        }
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "summary": "Test and verify that all existing School Mitra features (student management, fee tracking, attendance, teacher management, role-based authentication) work correctly in PWA mode both online and offline with cached data",
-      "acceptanceCriteria": [
-        "All features work in installed PWA mode",
-        "Previously loaded student data is viewable offline",
-        "Previously loaded fee records are accessible offline",
-        "Previously loaded attendance records can be viewed offline",
-        "Teacher management interface works in PWA mode for admins",
-        "Authentication state persists across PWA sessions",
-        "Role-based permissions function correctly in PWA mode"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/StudentsSection.tsx",
-          "operation": "modify",
-          "description": "Verify that the students section works correctly in PWA mode by ensuring React Query caching is properly configured, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail due to offline status. Add a visual indicator (e.g., a banner or badge) when displaying cached/offline data to inform users they're viewing previously loaded information."
-        },
-        {
-          "path": "frontend/src/components/FeesSection.tsx",
-          "operation": "modify",
-          "description": "Verify that the fees section works correctly in PWA mode by ensuring React Query caching is properly configured for fee records, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail. Add a visual indicator when displaying cached/offline data. Ensure create/update operations show clear error messages when attempted offline, indicating that changes require an internet connection."
-        },
-        {
-          "path": "frontend/src/components/AttendanceSection.tsx",
-          "operation": "modify",
-          "description": "Verify that the attendance section works correctly in PWA mode by ensuring React Query caching is properly configured for attendance records and summaries, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail. Add a visual indicator when displaying cached/offline data. Ensure marking attendance offline shows a clear error message indicating that attendance marking requires an internet connection."
-        },
-        {
-          "path": "frontend/src/components/TeachersSection.tsx",
-          "operation": "modify",
-          "description": "Verify that the teachers section works correctly in PWA mode by ensuring React Query caching is properly configured for teacher data, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail. Add a visual indicator when displaying cached/offline data. Ensure create/update/delete operations show clear error messages when attempted offline."
-        },
-        {
-          "path": "frontend/src/components/ReportCardsSection.tsx",
-          "operation": "modify",
-          "description": "Verify that the report cards section works correctly in PWA mode by ensuring React Query caching is properly configured for report card data, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail. Add a visual indicator when displaying cached/offline data. Ensure create/update operations show clear error messages when attempted offline."
-        },
-        {
-          "path": "frontend/src/components/DashboardOverview.tsx",
-          "operation": "modify",
-          "description": "Verify that the dashboard overview works correctly in PWA mode by ensuring React Query caching is properly configured for dashboard metrics, error states gracefully handle offline scenarios with appropriate user messaging indicating cached data is being displayed, and the component doesn't break when API calls fail. Add a visual indicator when displaying cached/stale metrics to inform users they're viewing previously loaded data."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Review and enhance React Query configuration for all data fetching hooks to support offline functionality. Ensure staleTime and cacheTime are set appropriately so cached data remains available when offline. Configure retry logic to handle network failures gracefully without excessive retries. Add refetchOnReconnect: true to automatically refresh data when the app comes back online. Consider adding networkMode: 'offlineFirst' or 'always' where appropriate to allow queries to return cached data immediately when offline."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify that authentication state persists correctly in PWA mode across app launches and sessions. Ensure the Internet Identity authentication flow works when the app is installed and launched as a PWA. Verify that the profile setup modal doesn't flash inappropriately when cached profile data is available offline. Add offline status detection and display a global offline indicator (e.g., in the header or as a toast notification) when the app detects it's offline, helping users understand why certain operations may fail."
+          "description": "Review the Pacifico font import link from Google Fonts. After verifying that Pacifico is no longer used in the Footer component or anywhere else in the application (check other components and CSS files), remove the Pacifico font import link to improve page load performance. If Pacifico is still used elsewhere in the app, keep the import but document where it is used."
         }
       ]
     }

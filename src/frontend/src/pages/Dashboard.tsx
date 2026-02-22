@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { LayoutDashboard, Users, UserCheck, DollarSign, Calendar, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, UserCheck, DollarSign, Calendar, FileText, Activity } from 'lucide-react';
 import DashboardOverview from '../components/DashboardOverview';
 import StudentsSection from '../components/StudentsSection';
 import TeachersSection from '../components/TeachersSection';
 import FeesSection from '../components/FeesSection';
 import AttendanceSection from '../components/AttendanceSection';
 import ReportCardsSection from '../components/ReportCardsSection';
+import ActivityLogSection from '../components/ActivityLogSection';
 import { useGetCallerUserProfile } from '../hooks/useQueries';
 
 export default function Dashboard() {
@@ -66,6 +67,15 @@ export default function Dashboard() {
             <FileText className="w-4 h-4" />
             Report Cards
           </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger 
+              value="activitylog" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 flex items-center gap-2"
+            >
+              <Activity className="w-4 h-4" />
+              Activity Log
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -95,6 +105,12 @@ export default function Dashboard() {
         <TabsContent value="reportcards" className="space-y-6">
           <ReportCardsSection />
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="activitylog" className="space-y-6">
+            <ActivityLogSection />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

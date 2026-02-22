@@ -136,6 +136,13 @@ export interface FeeRecord {
     classId: ClassId;
     amount: bigint;
 }
+export interface ActivityAuditLogEntry {
+    action: string;
+    performerRole: string;
+    performerPrincipal: Principal;
+    timestamp: bigint;
+    details: string;
+}
 export type ClassId = bigint;
 export interface AttendanceRecord {
     studentId: StudentId;
@@ -174,9 +181,12 @@ export interface backendInterface {
     addTeacherWithCredentials(name: string, subject: string, assignedClasses: Array<ClassId>, uniqueId: string, password: string): Promise<TeacherId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignTeacherRole(teacherPrincipal: Principal, uniqueId: string): Promise<void>;
+    createActivityLogEntry(performerRole: string, action: string, details: string): Promise<void>;
     deleteFeeRecord(id: bigint): Promise<void>;
     deleteStudent(id: StudentId): Promise<void>;
     deleteTeacher(id: TeacherId): Promise<void>;
+    getActivityAuditLogsByRole(role: string): Promise<Array<ActivityAuditLogEntry>>;
+    getAllActivityAuditLogs(): Promise<Array<ActivityAuditLogEntry>>;
     getAllAttendance(): Promise<Array<AttendanceRecord>>;
     getAllFeeRecords(): Promise<Array<FeeRecord>>;
     getAllReportCards(): Promise<Array<ReportCard>>;
@@ -202,6 +212,7 @@ export interface backendInterface {
     getReportCardsByStudent(studentId: StudentId): Promise<Array<ReportCard>>;
     getReportCardsByTeacher(teacherId: TeacherId): Promise<Array<ReportCard>>;
     getStudent(id: StudentId): Promise<Student | null>;
+    getStudentActivityHistory(studentId: StudentId): Promise<Array<ActivityAuditLogEntry>>;
     getStudentsByClass(classId: ClassId): Promise<Array<Student>>;
     getTeacher(id: TeacherId): Promise<TeacherProfile | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
@@ -399,6 +410,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async createActivityLogEntry(arg0: string, arg1: string, arg2: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createActivityLogEntry(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createActivityLogEntry(arg0, arg1, arg2);
+            return result;
+        }
+    }
     async deleteFeeRecord(arg0: bigint): Promise<void> {
         if (this.processError) {
             try {
@@ -438,6 +463,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deleteTeacher(arg0);
+            return result;
+        }
+    }
+    async getActivityAuditLogsByRole(arg0: string): Promise<Array<ActivityAuditLogEntry>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getActivityAuditLogsByRole(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getActivityAuditLogsByRole(arg0);
+            return result;
+        }
+    }
+    async getAllActivityAuditLogs(): Promise<Array<ActivityAuditLogEntry>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllActivityAuditLogs();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllActivityAuditLogs();
             return result;
         }
     }
@@ -724,6 +777,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getStudent(arg0);
             return from_candid_opt_n20(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getStudentActivityHistory(arg0: StudentId): Promise<Array<ActivityAuditLogEntry>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getStudentActivityHistory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getStudentActivityHistory(arg0);
+            return result;
         }
     }
     async getStudentsByClass(arg0: ClassId): Promise<Array<Student>> {

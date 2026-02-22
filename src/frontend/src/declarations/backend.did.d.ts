@@ -10,6 +10,13 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface ActivityAuditLogEntry {
+  'action' : string,
+  'performerRole' : string,
+  'performerPrincipal' : Principal,
+  'timestamp' : bigint,
+  'details' : string,
+}
 export interface AttendanceRecord {
   'studentId' : StudentId,
   'present' : boolean,
@@ -105,9 +112,15 @@ export interface _SERVICE {
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignTeacherRole' : ActorMethod<[Principal, string], undefined>,
+  'createActivityLogEntry' : ActorMethod<[string, string, string], undefined>,
   'deleteFeeRecord' : ActorMethod<[bigint], undefined>,
   'deleteStudent' : ActorMethod<[StudentId], undefined>,
   'deleteTeacher' : ActorMethod<[TeacherId], undefined>,
+  'getActivityAuditLogsByRole' : ActorMethod<
+    [string],
+    Array<ActivityAuditLogEntry>
+  >,
+  'getAllActivityAuditLogs' : ActorMethod<[], Array<ActivityAuditLogEntry>>,
   'getAllAttendance' : ActorMethod<[], Array<AttendanceRecord>>,
   'getAllFeeRecords' : ActorMethod<[], Array<FeeRecord>>,
   'getAllReportCards' : ActorMethod<[], Array<ReportCard>>,
@@ -142,6 +155,10 @@ export interface _SERVICE {
   'getReportCardsByStudent' : ActorMethod<[StudentId], Array<ReportCard>>,
   'getReportCardsByTeacher' : ActorMethod<[TeacherId], Array<ReportCard>>,
   'getStudent' : ActorMethod<[StudentId], [] | [Student]>,
+  'getStudentActivityHistory' : ActorMethod<
+    [StudentId],
+    Array<ActivityAuditLogEntry>
+  >,
   'getStudentsByClass' : ActorMethod<[ClassId], Array<Student>>,
   'getTeacher' : ActorMethod<[TeacherId], [] | [TeacherProfile]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,

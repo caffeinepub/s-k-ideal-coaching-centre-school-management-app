@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { Student, TeacherProfile, FeeRecord, AttendanceRecord, UserProfile, StudentId, TeacherId, ClassId, MonthlyAttendanceSummary, ReportCard, ReportCardId, SubjectMarks } from '../backend';
+import type { Student, TeacherProfile, FeeRecord, AttendanceRecord, UserProfile, StudentId, TeacherId, ClassId, MonthlyAttendanceSummary, ReportCard, ReportCardId, SubjectMarks, ActivityAuditLogEntry } from '../backend';
 import { toast } from 'sonner';
 
 // User Profile Queries
@@ -524,8 +524,8 @@ export function useGetAllReportCards() {
         throw new Error('User not authenticated');
       }
       try {
-        const cards = await actor.getAllReportCards();
-        return cards;
+        const reportCards = await actor.getAllReportCards();
+        return reportCards;
       } catch (error) {
         console.error('[useGetAllReportCards] Error:', error);
         throw new Error('Failed to load report cards. Please try again.');
@@ -539,29 +539,16 @@ export function useGetAllReportCards() {
   });
 }
 
-export function useGetReportCardsByStudent(studentId: StudentId) {
+export function useGetReportCard(id: ReportCardId) {
   const { actor } = useActor();
 
-  return useQuery<ReportCard[]>({
-    queryKey: ['reportCards', 'student', studentId.toString()],
+  return useQuery<ReportCard | null>({
+    queryKey: ['reportCard', id.toString()],
     queryFn: async () => {
       if (!actor) throw new Error('Backend connection not available');
-      return actor.getReportCardsByStudent(studentId);
+      return actor.getReportCard(id);
     },
-    enabled: !!actor && studentId !== undefined,
-  });
-}
-
-export function useGetReportCardsByClass(classId: ClassId) {
-  const { actor } = useActor();
-
-  return useQuery<ReportCard[]>({
-    queryKey: ['reportCards', 'class', classId.toString()],
-    queryFn: async () => {
-      if (!actor) throw new Error('Backend connection not available');
-      return actor.getReportCardsByClass(classId);
-    },
-    enabled: !!actor && classId !== undefined,
+    enabled: !!actor && id !== undefined,
   });
 }
 
@@ -636,5 +623,36 @@ export function useUpdateReportCard() {
     onError: (error: Error) => {
       toast.error(`Failed to update report card: ${error.message}`);
     },
+  });
+}
+
+// Activity Audit Log Queries
+export function useGetAllActivityAuditLogs() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<ActivityAuditLogEntry[]>({
+    queryKey: ['activityAuditLogs'],
+    queryFn: async () => {
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
+      try {
+        const logs = await actor.getAllActivityAuditLogs();
+        return logs;
+      } catch (error) {
+        console.error('[useGetAllActivityAuditLogs] Error:', error);
+        throw new Error('Failed to load activity logs. Please try again.');
+      }
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+    retry: 2,
+    retryDelay: 1000,
+    staleTime: 10000,
+    gcTime: 5 * 60 * 1000,
+    refetchInterval: 30000,
   });
 }

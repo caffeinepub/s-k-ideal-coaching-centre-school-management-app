@@ -55,7 +55,6 @@ export default {
         },
       },
       fontFamily: {
-        cursive: ['"Dancing Script"', 'cursive'],
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
@@ -74,4 +73,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 }
-

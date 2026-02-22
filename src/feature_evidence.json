@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-progressive-web-app-pwa-functionality-including-service-worker-registration-offline-caching-strategy-for-static-assets-and-api-responses-and-cache-management-for-optimal-performance",
-      "featureTitle": "Implement Progressive Web App (PWA) functionality including service worker registration, offline caching strategy for static assets and API responses, and cache management for optimal performance",
+      "featureId": "feature-replace-the-pacifico-cursive-font-in-the-footer-component-with-a-modern-clean-font-family-such-as-inter-poppins-or-montserrat-while-keeping-the-text-built-and-managed-by-tixtededits-unchanged",
+      "featureTitle": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
       "files": [
-        "frontend/public/service-worker.js",
-        "frontend/src/registerServiceWorker.ts"
+        "frontend/src/components/Footer.tsx",
+        "frontend/tailwind.config.js"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,119 +18,13 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-19"
+        "REQ-31"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-and-configure-web-app-manifest-manifest-json-with-school-mitra-branding-app-name-description-theme-colors-background-color-display-mode-set-to-standalone-and-start-url",
-      "featureTitle": "Create and configure web app manifest (manifest.json) with School Mitra branding, app name, description, theme colors, background color, display mode set to 'standalone', and start URL",
-      "files": [
-        "frontend/index.html",
-        "frontend/public/manifest.json"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-20"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-generate-and-configure-pwa-app-icons-in-multiple-sizes-192x192-512x512-for-installation-on-various-devices-and-create-a-favicon-for-browser-tab-display",
-      "featureTitle": "Generate and configure PWA app icons in multiple sizes (192x192, 512x512) for installation on various devices, and create a favicon for browser tab display",
-      "files": [
-        "frontend/index.html",
-        "frontend/public/manifest.json"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-21"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-pwa-install-prompt-component-that-detects-when-the-app-can-be-installed-displays-a-user-friendly-install-button-or-banner-handles-the-beforeinstallprompt-event-and-can-be-dismissed-by-the-user",
-      "featureTitle": "Add PWA install prompt component that detects when the app can be installed, displays a user-friendly install button or banner, handles the beforeinstallprompt event, and can be dismissed by the user",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/PWAInstallPrompt.tsx",
-        "frontend/src/hooks/usePWAInstall.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-22"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-configure-splash-screen-for-pwa-with-school-mitra-branding-including-app-icon-name-and-background-color-that-displays-during-app-launch-on-mobile-devices",
-      "featureTitle": "Configure splash screen for PWA with School Mitra branding including app icon, name, and background color that displays during app launch on mobile devices",
-      "files": [
-        "frontend/index.html",
-        "frontend/public/manifest.json"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-23"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-offline-fallback-page-that-displays-when-users-navigate-to-uncached-pages-while-offline-with-clear-messaging-about-offline-status-and-instructions-to-reconnect",
-      "featureTitle": "Implement offline fallback page that displays when users navigate to uncached pages while offline, with clear messaging about offline status and instructions to reconnect",
-      "files": [
-        "frontend/public/offline.html",
-        "frontend/public/service-worker.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-24"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-meta-tags-to-index-html-for-pwa-support-including-viewport-settings-theme-color-for-browser-ui-apple-touch-icon-for-ios-devices-and-mobile-web-app-capable-tags",
-      "featureTitle": "Add meta tags to index.html for PWA support including viewport settings, theme-color for browser UI, apple-touch-icon for iOS devices, and mobile-web-app-capable tags",
+      "featureId": "feature-remove-or-update-the-pacifico-font-import-from-frontend-index-html-if-it-is-no-longer-used-elsewhere-in-the-application-after-the-footer-font-change",
+      "featureTitle": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
       "files": [
         "frontend/index.html"
       ],
@@ -144,28 +38,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-25"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-test-and-verify-that-all-existing-school-mitra-features-student-management-fee-tracking-attendance-teacher-management-role-based-authentication-work-correctly-in-pwa-mode-both-online-and-offline-with-cached-data",
-      "featureTitle": "Test and verify that all existing School Mitra features (student management, fee tracking, attendance, teacher management, role-based authentication) work correctly in PWA mode both online and offline with cached data",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useQueries.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
+        "REQ-32"
       ],
       "confidence": "high"
     }

@@ -47,6 +47,13 @@ export interface FeeRecord {
     classId: ClassId;
     amount: bigint;
 }
+export interface ActivityAuditLogEntry {
+    action: string;
+    performerRole: string;
+    performerPrincipal: Principal;
+    timestamp: bigint;
+    details: string;
+}
 export type ClassId = bigint;
 export interface AttendanceRecord {
     studentId: StudentId;
@@ -74,9 +81,12 @@ export interface backendInterface {
     addTeacherWithCredentials(name: string, subject: string, assignedClasses: Array<ClassId>, uniqueId: string, password: string): Promise<TeacherId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignTeacherRole(teacherPrincipal: Principal, uniqueId: string): Promise<void>;
+    createActivityLogEntry(performerRole: string, action: string, details: string): Promise<void>;
     deleteFeeRecord(id: bigint): Promise<void>;
     deleteStudent(id: StudentId): Promise<void>;
     deleteTeacher(id: TeacherId): Promise<void>;
+    getActivityAuditLogsByRole(role: string): Promise<Array<ActivityAuditLogEntry>>;
+    getAllActivityAuditLogs(): Promise<Array<ActivityAuditLogEntry>>;
     getAllAttendance(): Promise<Array<AttendanceRecord>>;
     getAllFeeRecords(): Promise<Array<FeeRecord>>;
     getAllReportCards(): Promise<Array<ReportCard>>;
@@ -102,6 +112,7 @@ export interface backendInterface {
     getReportCardsByStudent(studentId: StudentId): Promise<Array<ReportCard>>;
     getReportCardsByTeacher(teacherId: TeacherId): Promise<Array<ReportCard>>;
     getStudent(id: StudentId): Promise<Student | null>;
+    getStudentActivityHistory(studentId: StudentId): Promise<Array<ActivityAuditLogEntry>>;
     getStudentsByClass(classId: ClassId): Promise<Array<Student>>;
     getTeacher(id: TeacherId): Promise<TeacherProfile | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
