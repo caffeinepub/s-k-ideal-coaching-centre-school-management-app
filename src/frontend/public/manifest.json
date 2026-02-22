@@ -1,39 +1,28 @@
 {
-  "name": "S.K Ideal Coaching Centre",
-  "short_name": "SK Coaching",
-  "description": "School Management System for S.K Ideal Coaching Centre",
+  "name": "School Mitra",
+  "short_name": "School Mitra",
+  "description": "Comprehensive school management system for managing students, fees, attendance, teachers, and report cards",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/generated/education-icon-transparent.dim_64x64.png",
-      "sizes": "64x64",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/generated/education-icon-transparent.dim_64x64.png",
-      "sizes": "64x64",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/generated/education-icon-transparent.dim_64x64.png",
+      "src": "/assets/generated/school-mitra-icon.dim_192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/assets/generated/education-icon-transparent.dim_64x64.png",
+      "src": "/assets/generated/school-mitra-icon.dim_512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity"],
+  "categories": ["education", "productivity", "business"],
   "screenshots": [
     {
       "src": "/assets/generated/dashboard-analytics.dim_400x300.jpg",

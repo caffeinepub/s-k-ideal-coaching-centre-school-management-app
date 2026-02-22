@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { useGetAllFeeRecords, useGetAllStudents, useAddFeeRecord, useUpdateFeeRecord } from '../hooks/useQueries';
+import { useGetAllFeeRecords, useGetAllStudents, useAddFeeRecord, useUpdateFeeRecord, useDeleteFeeRecord } from '../hooks/useQueries';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Badge } from './ui/badge';
-import { Plus, Search, DollarSign, CheckCircle, XCircle, Edit, TrendingUp, AlertCircle } from 'lucide-react';
+import { Plus, Search, DollarSign, CheckCircle, XCircle, Edit, TrendingUp, AlertCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { FeeRecord } from '../backend';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -222,7 +223,8 @@ export default function FeesSection() {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <EditFeeButton record={record} index={index} students={students} />
-                          <MarkPaidButton record={record} index={index} />
+                          {!record.isPaid && <MarkPaidButton record={record} index={index} />}
+                          <DeleteFeeButton record={record} index={index} studentName={getStudentName(record.studentId)} />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -535,8 +537,6 @@ function MarkPaidButton({ record, index }: { record: FeeRecord; index: number })
     }
   };
 
-  if (record.isPaid) return null;
-
   return (
     <Button
       variant="outline"
@@ -557,5 +557,73 @@ function MarkPaidButton({ record, index }: { record: FeeRecord; index: number })
         </span>
       )}
     </Button>
+  );
+}
+
+function DeleteFeeButton({ record, index, studentName }: { record: FeeRecord; index: number; studentName: string }) {
+  const deleteFeeRecord = useDeleteFeeRecord();
+
+  const handleDelete = async () => {
+    try {
+      await deleteFeeRecord.mutateAsync(BigInt(index));
+      toast.success('Fee record deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete fee record');
+      console.error(error);
+    }
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-200 border-2 border-red-200 dark:border-red-800 font-semibold shadow-sm hover:shadow-md"
+        >
+          <Trash2 className="w-4 h-4 mr-1.5" />
+          Delete
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="solid-modal-content border-2 border-red-200 dark:border-red-800 shadow-premium-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            Delete Fee Record
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-base text-gray-700 dark:text-gray-300 pt-2">
+            Are you sure you want to delete this fee record for <span className="font-bold text-gray-900 dark:text-white">{studentName}</span>?
+            <br />
+            <span className="font-semibold text-red-600 dark:text-red-400">
+              Amount: {formatINR(record.amount)} ({record.isPaid ? 'Paid' : 'Unpaid'})
+            </span>
+            <br />
+            <br />
+            This action cannot be undone and will permanently remove the fee record from the system.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="border-2 font-semibold shadow-sm hover:shadow-md">
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={deleteFeeRecord.isPending}
+            className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-premium hover:shadow-premium-lg transition-all duration-300 font-semibold"
+          >
+            {deleteFeeRecord.isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⏳</span>
+                Deleting...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Trash2 className="w-4 h-4" />
+                Delete Fee Record
+              </span>
+            )}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

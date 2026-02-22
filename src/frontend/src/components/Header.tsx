@@ -27,9 +27,8 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                S.K Ideal Coaching Centre
+                School Mitra
               </h1>
-              <p className="text-xs text-muted-foreground font-medium">Excellence in Education</p>
             </div>
           </div>
           
@@ -57,4 +56,3 @@ export default function Header() {
     </header>
   );
 }
-

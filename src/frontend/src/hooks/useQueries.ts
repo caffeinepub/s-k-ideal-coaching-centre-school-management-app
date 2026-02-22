@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import type { Student, TeacherProfile, FeeRecord, AttendanceRecord, UserProfile, StudentId, TeacherId, ClassId, MonthlyAttendanceSummary, ReportCard, ReportCardId, SubjectMarks } from '../backend';
+import { toast } from 'sonner';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -10,15 +12,13 @@ export function useGetCallerUserProfile() {
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) {
-        console.warn('Actor not available for profile fetch');
         throw new Error('Backend connection not available. Please wait...');
       }
       try {
         const profile = await actor.getCallerUserProfile();
-        console.log('Profile fetched successfully:', profile);
         return profile;
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('[useGetCallerUserProfile] Error:', error);
         throw error;
       }
     },
@@ -26,6 +26,7 @@ export function useGetCallerUserProfile() {
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
     staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 
   return {
@@ -42,75 +43,118 @@ export function useSaveCallerUserProfile() {
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
       if (!actor) throw new Error('Backend connection not available');
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to save your profile.');
       try {
-        return await actor.saveCallerUserProfile(profile);
+        const result = await actor.saveCallerUserProfile(profile);
+        return result;
       } catch (error) {
-        console.error('Error saving user profile:', error);
+        console.error('[useSaveCallerUserProfile] Error:', error);
         throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      toast.success('Profile saved successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to save profile: ${error.message}`);
     },
   });
 }
 
-// Dashboard Queries
+// Teacher Authentication
+export function useVerifyTeacher() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (credentials: { uniqueId: string; password: string }) => {
+      if (!actor) throw new Error('Backend connection not available');
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to sign in.');
+      
+      const isValid = await actor.verifyAndAuthenticateTeacher(credentials.uniqueId, credentials.password);
+      
+      if (!isValid) {
+        throw new Error('Invalid credentials. Please check your username and password.');
+      }
+      
+      return isValid;
+    },
+    onError: (error: Error) => {
+      console.error('[useVerifyTeacher] Error:', error);
+    },
+  });
+}
+
+// Dashboard Metrics
 export function useGetDashboardMetrics() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery({
     queryKey: ['dashboardMetrics'],
     queryFn: async () => {
-      if (!actor) return null;
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getDashboardMetrics();
+        const metrics = await actor.getDashboardMetrics();
+        return metrics;
       } catch (error) {
-        console.error('Error fetching dashboard metrics:', error);
-        throw error;
+        console.error('[useGetDashboardMetrics] Error:', error);
+        throw new Error('Failed to load dashboard metrics. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
+    retryDelay: 1000,
+    staleTime: 10000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
 // Student Queries
 export function useGetAllStudents() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery<Student[]>({
     queryKey: ['students'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getAllStudents();
+        const students = await actor.getAllStudents();
+        return students;
       } catch (error) {
-        console.error('Error fetching students:', error);
-        throw error;
+        console.error('[useGetAllStudents] Error:', error);
+        throw new Error('Failed to load students. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
+    retryDelay: 1000,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
-export function useGetStudentsByClass(classId: ClassId) {
-  const { actor, isFetching } = useActor();
+export function useGetStudent(id: StudentId) {
+  const { actor } = useActor();
 
-  return useQuery<Student[]>({
-    queryKey: ['students', 'class', classId.toString()],
+  return useQuery<Student | null>({
+    queryKey: ['student', id.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getStudentsByClass(classId);
-      } catch (error) {
-        console.error('Error fetching students by class:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getStudent(id);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && id !== undefined,
   });
 }
 
@@ -121,16 +165,16 @@ export function useAddStudent() {
   return useMutation({
     mutationFn: async (data: { name: string; classId: ClassId; parentContact: string; admissionStatus: boolean; photoUrl: string | null }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.addStudent(data.name, data.classId, data.parentContact, data.admissionStatus, data.photoUrl);
-      } catch (error) {
-        console.error('Error adding student:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to add students.');
+      return actor.addStudent(data.name, data.classId, data.parentContact, data.admissionStatus, data.photoUrl);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Student added successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to add student: ${error.message}`);
     },
   });
 }
@@ -142,15 +186,16 @@ export function useUpdateStudent() {
   return useMutation({
     mutationFn: async (data: { id: StudentId; name: string; classId: ClassId; parentContact: string; admissionStatus: boolean; photoUrl: string | null }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.updateStudent(data.id, data.name, data.classId, data.parentContact, data.admissionStatus, data.photoUrl);
-      } catch (error) {
-        console.error('Error updating student:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to update students.');
+      return actor.updateStudent(data.id, data.name, data.classId, data.parentContact, data.admissionStatus, data.photoUrl);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Student updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to update student: ${error.message}`);
     },
   });
 }
@@ -162,59 +207,80 @@ export function useDeleteStudent() {
   return useMutation({
     mutationFn: async (id: StudentId) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.deleteStudent(id);
-      } catch (error) {
-        console.error('Error deleting student:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to delete students.');
+      return actor.deleteStudent(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
-      queryClient.invalidateQueries({ queryKey: ['attendance'] });
-      queryClient.invalidateQueries({ queryKey: ['feeRecords'] });
+      toast.success('Student deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete student: ${error.message}`);
     },
   });
 }
 
 // Teacher Queries
 export function useGetAllTeachers() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery<TeacherProfile[]>({
     queryKey: ['teachers'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getAllTeachers();
+        const teachers = await actor.getAllTeachers();
+        return teachers;
       } catch (error) {
-        console.error('Error fetching teachers:', error);
-        throw error;
+        console.error('[useGetAllTeachers] Error:', error);
+        throw new Error('Failed to load teachers. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
+    retryDelay: 1000,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
-export function useAddTeacherWithCredentials() {
+export function useGetTeacher(id: TeacherId) {
+  const { actor } = useActor();
+
+  return useQuery<TeacherProfile | null>({
+    queryKey: ['teacher', id.toString()],
+    queryFn: async () => {
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getTeacher(id);
+    },
+    enabled: !!actor && id !== undefined,
+  });
+}
+
+export function useAddTeacher() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: { name: string; subject: string; assignedClasses: ClassId[]; uniqueId: string; password: string }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.addTeacherWithCredentials(data.name, data.subject, data.assignedClasses, data.uniqueId, data.password);
-      } catch (error) {
-        console.error('Error adding teacher:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to add teachers.');
+      return actor.addTeacherWithCredentials(data.name, data.subject, data.assignedClasses, data.uniqueId, data.password);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teachers'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Teacher added successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to add teacher: ${error.message}`);
     },
   });
 }
@@ -226,15 +292,15 @@ export function useUpdateTeacher() {
   return useMutation({
     mutationFn: async (data: { id: TeacherId; name: string; subject: string; assignedClasses: ClassId[] }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.updateTeacher(data.id, data.name, data.subject, data.assignedClasses);
-      } catch (error) {
-        console.error('Error updating teacher:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to update teachers.');
+      return actor.updateTeacher(data.id, data.name, data.subject, data.assignedClasses);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teachers'] });
+      toast.success('Teacher updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to update teacher: ${error.message}`);
     },
   });
 }
@@ -246,56 +312,47 @@ export function useDeleteTeacher() {
   return useMutation({
     mutationFn: async (id: TeacherId) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.deleteTeacher(id);
-      } catch (error) {
-        console.error('Error deleting teacher:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to delete teachers.');
+      return actor.deleteTeacher(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teachers'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Teacher deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete teacher: ${error.message}`);
     },
   });
 }
 
-// Fee Queries
+// Fee Record Queries
 export function useGetAllFeeRecords() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery<FeeRecord[]>({
     queryKey: ['feeRecords'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getAllFeeRecords();
+        const records = await actor.getAllFeeRecords();
+        return records;
       } catch (error) {
-        console.error('Error fetching fee records:', error);
-        throw error;
+        console.error('[useGetAllFeeRecords] Error:', error);
+        throw new Error('Failed to load fee records. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
-  });
-}
-
-export function useGetFeeRecordsByStudent(studentId: StudentId) {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<FeeRecord[]>({
-    queryKey: ['feeRecords', 'student', studentId.toString()],
-    queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getFeeRecordsByStudent(studentId);
-      } catch (error) {
-        console.error('Error fetching fee records by student:', error);
-        throw error;
-      }
-    },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    retryDelay: 1000,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
@@ -306,16 +363,16 @@ export function useAddFeeRecord() {
   return useMutation({
     mutationFn: async (data: { studentId: StudentId; classId: ClassId; amount: bigint; isPaid: boolean }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.addFeeRecord(data.studentId, data.classId, data.amount, data.isPaid);
-      } catch (error) {
-        console.error('Error adding fee record:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to add fee records.');
+      return actor.addFeeRecord(data.studentId, data.classId, data.amount, data.isPaid);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feeRecords'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Fee record added successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to add fee record: ${error.message}`);
     },
   });
 }
@@ -327,56 +384,81 @@ export function useUpdateFeeRecord() {
   return useMutation({
     mutationFn: async (data: { id: bigint; studentId: StudentId; classId: ClassId; amount: bigint; isPaid: boolean }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.updateFeeRecord(data.id, data.studentId, data.classId, data.amount, data.isPaid);
-      } catch (error) {
-        console.error('Error updating fee record:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to update fee records.');
+      return actor.updateFeeRecord(data.id, data.studentId, data.classId, data.amount, data.isPaid);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feeRecords'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Fee record updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to update fee record: ${error.message}`);
+    },
+  });
+}
+
+export function useDeleteFeeRecord() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error('Backend connection not available');
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to delete fee records.');
+      return actor.deleteFeeRecord(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feeRecords'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      toast.success('Fee record deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to delete fee record: ${error.message}`);
     },
   });
 }
 
 // Attendance Queries
 export function useGetAllAttendance() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery<AttendanceRecord[]>({
     queryKey: ['attendance'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getAllAttendance();
+        const records = await actor.getAllAttendance();
+        return records;
       } catch (error) {
-        console.error('Error fetching attendance:', error);
-        throw error;
+        console.error('[useGetAllAttendance] Error:', error);
+        throw new Error('Failed to load attendance records. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
+    retryDelay: 1000,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
 export function useGetAttendanceByStudent(studentId: StudentId) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   return useQuery<AttendanceRecord[]>({
-    queryKey: ['attendance', 'student', studentId.toString()],
+    queryKey: ['attendance', studentId.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getAttendanceByStudent(studentId);
-      } catch (error) {
-        console.error('Error fetching attendance by student:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getAttendanceByStudent(studentId);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && studentId !== undefined,
   });
 }
 
@@ -387,113 +469,99 @@ export function useMarkAttendance() {
   return useMutation({
     mutationFn: async (data: { studentId: StudentId; date: bigint; present: boolean }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.markAttendance(data.studentId, data.date, data.present);
-      } catch (error) {
-        console.error('Error marking attendance:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to mark attendance.');
+      return actor.markAttendance(data.studentId, data.date, data.present);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
-      queryClient.invalidateQueries({ queryKey: ['monthlyAttendance'] });
+      queryClient.invalidateQueries({ queryKey: ['monthlyAttendanceSummary'] });
+      toast.success('Attendance marked successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to mark attendance: ${error.message}`);
     },
   });
 }
 
 export function useGetMonthlyAttendanceSummary(studentId: StudentId, year: bigint) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   return useQuery<MonthlyAttendanceSummary[]>({
-    queryKey: ['monthlyAttendance', 'student', studentId.toString(), year.toString()],
+    queryKey: ['monthlyAttendanceSummary', studentId.toString(), year.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getMonthlyAttendanceSummary(studentId, year);
-      } catch (error) {
-        console.error('Error fetching monthly attendance summary:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getMonthlyAttendanceSummary(studentId, year);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && studentId !== undefined && year !== undefined,
   });
 }
 
 export function useGetMonthlyAttendanceSummaryAllStudents(year: bigint) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   return useQuery<MonthlyAttendanceSummary[]>({
-    queryKey: ['monthlyAttendance', 'all', year.toString()],
+    queryKey: ['monthlyAttendanceSummaryAllStudents', year.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getMonthlyAttendanceSummaryAllStudents(year);
-      } catch (error) {
-        console.error('Error fetching monthly attendance summary for all students:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getMonthlyAttendanceSummaryAllStudents(year);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && year !== undefined,
   });
 }
 
 // Report Card Queries
 export function useGetAllReportCards() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
   return useQuery<ReportCard[]>({
     queryKey: ['reportCards'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      if (!identity) {
+        throw new Error('User not authenticated');
+      }
       try {
-        return await actor.getAllReportCards();
+        const cards = await actor.getAllReportCards();
+        return cards;
       } catch (error) {
-        console.error('Error fetching report cards:', error);
-        throw error;
+        console.error('[useGetAllReportCards] Error:', error);
+        throw new Error('Failed to load report cards. Please try again.');
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: 2,
+    retryDelay: 1000,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
 export function useGetReportCardsByStudent(studentId: StudentId) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   return useQuery<ReportCard[]>({
     queryKey: ['reportCards', 'student', studentId.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getReportCardsByStudent(studentId);
-      } catch (error) {
-        console.error('Error fetching report cards by student:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getReportCardsByStudent(studentId);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && studentId !== undefined,
   });
 }
 
 export function useGetReportCardsByClass(classId: ClassId) {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   return useQuery<ReportCard[]>({
     queryKey: ['reportCards', 'class', classId.toString()],
     queryFn: async () => {
-      if (!actor) return [];
-      try {
-        return await actor.getReportCardsByClass(classId);
-      } catch (error) {
-        console.error('Error fetching report cards by class:', error);
-        throw error;
-      }
+      if (!actor) throw new Error('Backend connection not available');
+      return actor.getReportCardsByClass(classId);
     },
-    enabled: !!actor && !isFetching,
-    retry: 2,
+    enabled: !!actor && classId !== undefined,
   });
 }
 
@@ -512,23 +580,23 @@ export function useAddReportCard() {
       evaluationDate: bigint;
     }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.addReportCard(
-          data.studentId,
-          data.teacherId,
-          data.subjectMarks,
-          data.totalMarks,
-          data.grade,
-          data.teacherRemarks,
-          data.evaluationDate
-        );
-      } catch (error) {
-        console.error('Error adding report card:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to add report cards.');
+      return actor.addReportCard(
+        data.studentId,
+        data.teacherId,
+        data.subjectMarks,
+        data.totalMarks,
+        data.grade,
+        data.teacherRemarks,
+        data.evaluationDate
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reportCards'] });
+      toast.success('Report card added successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to add report card: ${error.message}`);
     },
   });
 }
@@ -549,24 +617,24 @@ export function useUpdateReportCard() {
       evaluationDate: bigint;
     }) => {
       if (!actor) throw new Error('Backend connection not available');
-      try {
-        return await actor.updateReportCard(
-          data.id,
-          data.studentId,
-          data.teacherId,
-          data.subjectMarks,
-          data.totalMarks,
-          data.grade,
-          data.teacherRemarks,
-          data.evaluationDate
-        );
-      } catch (error) {
-        console.error('Error updating report card:', error);
-        throw error;
-      }
+      if (!navigator.onLine) throw new Error('You are offline. Please connect to the internet to update report cards.');
+      return actor.updateReportCard(
+        data.id,
+        data.studentId,
+        data.teacherId,
+        data.subjectMarks,
+        data.totalMarks,
+        data.grade,
+        data.teacherRemarks,
+        data.evaluationDate
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reportCards'] });
+      toast.success('Report card updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to update report card: ${error.message}`);
     },
   });
 }

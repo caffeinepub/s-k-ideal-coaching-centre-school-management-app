@@ -104,14 +104,14 @@ actor {
   var reportCardCounter = 0;
 
   // User Profile Management 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+  public shared ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view profiles");
     };
     userProfiles.get(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+  public shared ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
@@ -125,7 +125,7 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  public query ({ caller }) func getCallerRole() : async Text {
+  public shared ({ caller }) func getCallerRole() : async Text {
     let userRole = AccessControl.getUserRole(
       accessControlState,
       caller,
@@ -138,6 +138,7 @@ actor {
   };
 
   // Student Management
+  // Teachers and Admins can add students
   public shared ({ caller }) func addStudent(
     name : Text,
     classId : ClassId,
@@ -145,8 +146,8 @@ actor {
     admissionStatus : Bool,
     photoUrl : ?Text,
   ) : async StudentId {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can add students");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only teachers and admins can add students");
     };
     let studentId = studentCounter;
     let student : Student = {
@@ -162,6 +163,7 @@ actor {
     studentId;
   };
 
+  // Only Admins can update students (edit all records)
   public shared ({ caller }) func updateStudent(
     id : StudentId,
     name : Text,
@@ -170,8 +172,8 @@ actor {
     admissionStatus : Bool,
     photoUrl : ?Text,
   ) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can update students");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update students");
     };
     let student : Student = {
       id;
@@ -184,9 +186,10 @@ actor {
     students.add(id, student);
   };
 
+  // Teachers and Admins can delete students
   public shared ({ caller }) func deleteStudent(id : StudentId) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can delete students");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only teachers and admins can delete students");
     };
     switch (students.get(id)) {
       case (null) { Runtime.trap("Student not found") };
@@ -196,21 +199,21 @@ actor {
     };
   };
 
-  public query ({ caller }) func getStudent(id : StudentId) : async ?Student {
+  public shared ({ caller }) func getStudent(id : StudentId) : async ?Student {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view students");
     };
     students.get(id);
   };
 
-  public query ({ caller }) func getAllStudents() : async [Student] {
+  public shared ({ caller }) func getAllStudents() : async [Student] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view students");
     };
     students.values().toArray();
   };
 
-  public query ({ caller }) func getStudentsByClass(classId : ClassId) : async [Student] {
+  public shared ({ caller }) func getStudentsByClass(classId : ClassId) : async [Student] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view students");
     };
@@ -279,7 +282,7 @@ actor {
     };
   };
 
-  public query ({ caller }) func getTeacher(id : TeacherId) : async ?TeacherProfile {
+  public shared ({ caller }) func getTeacher(id : TeacherId) : async ?TeacherProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view teacher details");
     };
@@ -297,7 +300,7 @@ actor {
     };
   };
 
-  public query ({ caller }) func getAllTeachers() : async [TeacherProfile] {
+  public shared ({ caller }) func getAllTeachers() : async [TeacherProfile] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view all teachers");
     };
@@ -315,7 +318,7 @@ actor {
     teacherProfiles;
   };
 
-  // Fee Management - Admin and Teachers can update
+  // Fee Management - Admin only can add, Teachers and Admins can update
   public shared ({ caller }) func addFeeRecord(studentId : StudentId, classId : ClassId, amount : Nat, isPaid : Bool) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add fee records");
@@ -332,9 +335,10 @@ actor {
     recordId;
   };
 
+  // Teachers and Admins can edit fee records
   public shared ({ caller }) func updateFeeRecord(id : Nat, studentId : StudentId, classId : ClassId, amount : Nat, isPaid : Bool) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can update fee records");
+      Runtime.trap("Unauthorized: Only teachers and admins can update fee records");
     };
     let feeRecord : FeeRecord = {
       studentId;
@@ -345,21 +349,34 @@ actor {
     feeRecords.add(id, feeRecord);
   };
 
-  public query ({ caller }) func getFeeRecord(id : Nat) : async ?FeeRecord {
+  // Only Admins can delete fee records
+  public shared ({ caller }) func deleteFeeRecord(id : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete fee records");
+    };
+    switch (feeRecords.get(id)) {
+      case (null) { Runtime.trap("Fee record not found") };
+      case (?_) {
+        feeRecords.remove(id);
+      };
+    };
+  };
+
+  public shared ({ caller }) func getFeeRecord(id : Nat) : async ?FeeRecord {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view fee records");
     };
     feeRecords.get(id);
   };
 
-  public query ({ caller }) func getAllFeeRecords() : async [FeeRecord] {
+  public shared ({ caller }) func getAllFeeRecords() : async [FeeRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view fee records");
     };
     feeRecords.values().toArray();
   };
 
-  public query ({ caller }) func getFeeRecordsByStudent(studentId : StudentId) : async [FeeRecord] {
+  public shared ({ caller }) func getFeeRecordsByStudent(studentId : StudentId) : async [FeeRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view fee records");
     };
@@ -367,7 +384,7 @@ actor {
     filtered.toArray();
   };
 
-  public query ({ caller }) func getFeeRecordsByClass(classId : ClassId) : async [FeeRecord] {
+  public shared ({ caller }) func getFeeRecordsByClass(classId : ClassId) : async [FeeRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view fee records");
     };
@@ -378,7 +395,7 @@ actor {
   // Attendance Management - Teachers and Admins can mark, all authenticated users can view
   public shared ({ caller }) func markAttendance(studentId : StudentId, date : Int, present : Bool) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can mark attendance");
+      Runtime.trap("Unauthorized: Only teachers and admins can mark attendance");
     };
     let recordId = attendanceRecords.size();
     let attendanceRecord : AttendanceRecord = {
@@ -389,7 +406,7 @@ actor {
     attendanceRecords.add(recordId, attendanceRecord);
   };
 
-  public query ({ caller }) func getAttendanceByStudent(studentId : StudentId) : async [AttendanceRecord] {
+  public shared ({ caller }) func getAttendanceByStudent(studentId : StudentId) : async [AttendanceRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view attendance");
     };
@@ -397,14 +414,14 @@ actor {
     filtered.toArray();
   };
 
-  public query ({ caller }) func getAllAttendance() : async [AttendanceRecord] {
+  public shared ({ caller }) func getAllAttendance() : async [AttendanceRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view attendance");
     };
     attendanceRecords.values().toArray();
   };
 
-  public query ({ caller }) func getMonthlyAttendanceSummary(studentId : StudentId, year : Nat) : async [MonthlyAttendanceSummary] {
+  public shared ({ caller }) func getMonthlyAttendanceSummary(studentId : StudentId, year : Nat) : async [MonthlyAttendanceSummary] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view attendance summaries");
     };
@@ -445,7 +462,7 @@ actor {
     );
   };
 
-  public query ({ caller }) func getMonthlyAttendanceSummaryAllStudents(year : Nat) : async [MonthlyAttendanceSummary] {
+  public shared ({ caller }) func getMonthlyAttendanceSummaryAllStudents(year : Nat) : async [MonthlyAttendanceSummary] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view attendance summaries");
     };
@@ -509,7 +526,7 @@ actor {
   };
 
   // Dashboard Metrics - Authenticated users can view
-  public query ({ caller }) func getDashboardMetrics() : async {
+  public shared ({ caller }) func getDashboardMetrics() : async {
     totalStudents : Nat;
     totalFeesCollected : Nat;
     totalTeachers : Nat;
@@ -696,21 +713,21 @@ actor {
     };
   };
 
-  public query ({ caller }) func getReportCard(id : ReportCardId) : async ?ReportCard {
+  public shared ({ caller }) func getReportCard(id : ReportCardId) : async ?ReportCard {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view report cards");
     };
     reportCards.get(id);
   };
 
-  public query ({ caller }) func getAllReportCards() : async [ReportCard] {
+  public shared ({ caller }) func getAllReportCards() : async [ReportCard] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view report cards");
     };
     reportCards.values().toArray();
   };
 
-  public query ({ caller }) func getReportCardsByStudent(studentId : StudentId) : async [ReportCard] {
+  public shared ({ caller }) func getReportCardsByStudent(studentId : StudentId) : async [ReportCard] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view report cards");
     };
@@ -718,7 +735,7 @@ actor {
     filtered.toArray();
   };
 
-  public query ({ caller }) func getReportCardsByTeacher(teacherId : TeacherId) : async [ReportCard] {
+  public shared ({ caller }) func getReportCardsByTeacher(teacherId : TeacherId) : async [ReportCard] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view report cards");
     };
@@ -726,7 +743,7 @@ actor {
     filtered.toArray();
   };
 
-  public query ({ caller }) func getReportCardsByClass(classId : ClassId) : async [ReportCard] {
+  public shared ({ caller }) func getReportCardsByClass(classId : ClassId) : async [ReportCard] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can view report cards");
     };
@@ -741,3 +758,4 @@ actor {
     filtered.toArray();
   };
 };
+

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetAllTeachers, useAddTeacherWithCredentials, useUpdateTeacher, useDeleteTeacher, useGetCallerUserProfile } from '../hooks/useQueries';
+import { useGetAllTeachers, useAddTeacher, useUpdateTeacher, useDeleteTeacher, useGetCallerUserProfile } from '../hooks/useQueries';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -242,7 +242,7 @@ function TeacherForm({ teacher, onSuccess }: { teacher?: TeacherProfile | null; 
     new Set(teacher?.assignedClasses.map(c => Number(c)) || [])
   );
 
-  const addTeacher = useAddTeacherWithCredentials();
+  const addTeacher = useAddTeacher();
   const updateTeacher = useUpdateTeacher();
 
   const handleClassToggle = (classId: number) => {
@@ -402,4 +402,3 @@ function TeacherForm({ teacher, onSuccess }: { teacher?: TeacherProfile | null; 
     </form>
   );
 }
-

@@ -105,6 +105,7 @@ export interface _SERVICE {
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignTeacherRole' : ActorMethod<[Principal, string], undefined>,
+  'deleteFeeRecord' : ActorMethod<[bigint], undefined>,
   'deleteStudent' : ActorMethod<[StudentId], undefined>,
   'deleteTeacher' : ActorMethod<[TeacherId], undefined>,
   'getAllAttendance' : ActorMethod<[], Array<AttendanceRecord>>,

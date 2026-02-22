@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useGetAllStudents, useMarkAttendance, useGetAllAttendance, useGetMonthlyAttendanceSummaryAllStudents } from '../hooks/useQueries';
+import { useGetAllStudents, useMarkAttendance, useGetAllAttendance, useGetMonthlyAttendanceSummaryAllStudents, useGetCallerUserProfile } from '../hooks/useQueries';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Badge } from './ui/badge';
-import { Calendar, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
+import { Calendar, CheckCircle, XCircle, TrendingUp, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -26,332 +26,275 @@ const MONTHS = [
 ];
 
 export default function AttendanceSection() {
-  const { data: students = [], isLoading: studentsLoading } = useGetAllStudents();
-  const { data: attendanceRecords = [], isLoading: attendanceLoading } = useGetAllAttendance();
-  const { data: monthlySummaries = [], isLoading: summariesLoading } = useGetMonthlyAttendanceSummaryAllStudents(BigInt(2026));
-  const [selectedClass, setSelectedClass] = useState<string>('all');
-  const [selectedStudent, setSelectedStudent] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const markAttendance = useMarkAttendance();
+  const { data: userProfile } = useGetCallerUserProfile();
+  const isAdmin = userProfile?.role === 'admin';
 
-  const isLoading = studentsLoading || attendanceLoading;
-
-  const filteredStudents = selectedClass === 'all' 
-    ? students 
-    : students.filter(s => s.classId.toString() === selectedClass);
-
-  const uniqueClasses = Array.from(new Set(students.map(s => s.classId.toString()))).sort();
-
-  const getTodayAttendance = (studentId: bigint) => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    return attendanceRecords.find(
-      record => record.studentId === studentId && 
-                new Date(Number(record.date) / 1000000).setHours(0, 0, 0, 0) === today
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950/30 dark:to-red-950/30 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-premium">
+            <Lock className="w-12 h-12 text-orange-600 dark:text-orange-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Admin Access Only</h3>
+          <p className="text-muted-foreground font-medium">Only administrators can manage attendance records.</p>
+        </div>
+      </div>
     );
+  }
+
+  return <AttendanceContent />;
+}
+
+function AttendanceContent() {
+  const { data: students = [], isLoading: studentsLoading } = useGetAllStudents();
+  const markAttendance = useMarkAttendance();
+  const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attendanceMap, setAttendanceMap] = useState<Map<string, boolean>>(new Map());
+
+  const handleAttendanceToggle = (studentId: bigint, present: boolean) => {
+    setAttendanceMap(new Map(attendanceMap.set(studentId.toString(), present)));
   };
 
-  const handleMarkAttendance = async (studentId: bigint, present: boolean) => {
+  const handleSubmitAttendance = async () => {
+    if (attendanceMap.size === 0) {
+      toast.error('Please mark attendance for at least one student');
+      return;
+    }
+
+    const timestamp = BigInt(new Date(selectedDate).getTime());
+
     try {
-      const dateTimestamp = BigInt(new Date().getTime() * 1000000);
-      await markAttendance.mutateAsync({
-        studentId,
-        date: dateTimestamp,
-        present,
-      });
-      toast.success(`Attendance marked as ${present ? 'present' : 'absent'}`);
+      const promises = Array.from(attendanceMap.entries()).map(([studentId, present]) =>
+        markAttendance.mutateAsync({
+          studentId: BigInt(studentId),
+          date: timestamp,
+          present,
+        })
+      );
+
+      await Promise.all(promises);
+      toast.success('Attendance marked successfully!');
+      setAttendanceMap(new Map());
     } catch (error) {
       toast.error('Failed to mark attendance');
       console.error(error);
     }
   };
 
-  const getAttendanceStats = (studentId: bigint) => {
-    const records = attendanceRecords.filter(r => r.studentId === studentId);
-    const present = records.filter(r => r.present).length;
-    const total = records.length;
-    const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
-    return { present, total, percentage };
-  };
-
-  // Filter monthly summaries
-  const filteredMonthlySummaries = monthlySummaries.filter((summary) => {
-    const matchesStudent = selectedStudent === 'all' || summary.studentId.toString() === selectedStudent;
-    const matchesMonth = selectedMonth === 'all' || summary.month.toString() === selectedMonth;
-    return matchesStudent && matchesMonth;
-  });
-
-  // Group summaries by student
-  const summariesByStudent = filteredMonthlySummaries.reduce((acc, summary) => {
-    const studentId = summary.studentId.toString();
-    if (!acc[studentId]) {
-      acc[studentId] = [];
-    }
-    acc[studentId].push(summary);
-    return acc;
-  }, {} as Record<string, typeof monthlySummaries>);
-
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Attendance Management</h2>
-        <p className="text-muted-foreground">Mark and track student attendance</p>
-      </div>
-
-      <Tabs defaultValue="daily" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 glass-effect border-2">
-          <TabsTrigger value="daily" className="font-semibold">Daily Attendance</TabsTrigger>
-          <TabsTrigger value="monthly" className="font-semibold">Monthly Summary (2026)</TabsTrigger>
+      <Tabs defaultValue="mark" className="w-full">
+        <TabsList className="glass-effect border border-gray-200/50 dark:border-gray-800/50 p-1.5">
+          <TabsTrigger 
+            value="mark"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+          >
+            Mark Attendance
+          </TabsTrigger>
+          <TabsTrigger 
+            value="summary"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+          >
+            Monthly Summary
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="daily" className="space-y-4">
+        <TabsContent value="mark" className="space-y-6">
           <Card className="glass-effect border-gray-200/50 dark:border-gray-800/50 shadow-premium">
             <CardHeader>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Today's Attendance - {new Date().toLocaleDateString()}
-                </CardTitle>
-                <Select value={selectedClass} onValueChange={setSelectedClass}>
-                  <SelectTrigger className="w-full sm:w-[180px] border-2">
-                    <SelectValue placeholder="Filter by class" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Classes</SelectItem>
-                    {uniqueClasses.map((classId) => (
-                      <SelectItem key={classId} value={classId}>
-                        Class {classId}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Calendar className="w-5 h-5" />
+                Mark Daily Attendance
+              </CardTitle>
+              <p className="text-sm text-muted-foreground font-medium">Date: {selectedDate}</p>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
+              {studentsLoading ? (
                 <div className="space-y-3">
                   {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full" />
+                    <Skeleton key={i} className="h-16 w-full" />
                   ))}
                 </div>
-              ) : filteredStudents.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-950/30 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Calendar className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-                  </div>
+              ) : students.length === 0 ? (
+                <div className="text-center py-16">
                   <p className="text-muted-foreground font-medium">No students found</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-b-2">
-                        <TableHead className="font-bold">Student Name</TableHead>
-                        <TableHead className="font-bold">Class</TableHead>
-                        <TableHead className="font-bold">Attendance Stats</TableHead>
-                        <TableHead className="font-bold">Today's Status</TableHead>
-                        <TableHead className="text-right font-bold">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredStudents.map((student) => {
-                        const todayRecord = getTodayAttendance(student.id);
-                        const stats = getAttendanceStats(student.id);
-                        
-                        return (
-                          <TableRow key={student.id.toString()} className="hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors">
-                            <TableCell className="font-semibold">{student.name}</TableCell>
-                            <TableCell>
-                              <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0 shadow-md">
-                                Class {student.classId.toString()}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground font-medium">
-                                  {stats.present}/{stats.total} days
-                                </span>
-                                <Badge variant={stats.percentage >= 75 ? 'default' : 'destructive'} className="shadow-md">
-                                  {stats.percentage}%
-                                </Badge>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {todayRecord ? (
-                                <Badge variant={todayRecord.present ? 'default' : 'destructive'} className="gap-1 shadow-md">
-                                  {todayRecord.present ? (
-                                    <>
-                                      <CheckCircle className="w-3 h-3" />
-                                      Present
-                                    </>
-                                  ) : (
-                                    <>
-                                      <XCircle className="w-3 h-3" />
-                                      Absent
-                                    </>
-                                  )}
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline">Not Marked</Badge>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {!todayRecord && (
-                                <div className="flex justify-end gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleMarkAttendance(student.id, true)}
-                                    disabled={markAttendance.isPending}
-                                    className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
-                                  >
-                                    <CheckCircle className="w-4 h-4 mr-1" />
-                                    Present
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleMarkAttendance(student.id, false)}
-                                    disabled={markAttendance.isPending}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                                  >
-                                    <XCircle className="w-4 h-4 mr-1" />
-                                    Absent
-                                  </Button>
-                                </div>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                <>
+                  <div className="space-y-3 mb-6">
+                    {students.map((student) => {
+                      const isPresent = attendanceMap.get(student.id.toString());
+                      return (
+                        <div
+                          key={student.id.toString()}
+                          className="flex items-center justify-between p-4 border-2 rounded-xl hover:bg-orange-50/50 dark:hover:bg-orange-950/20 transition-colors"
+                        >
+                          <div>
+                            <p className="font-semibold text-gray-900 dark:text-white">{student.name}</p>
+                            <p className="text-sm text-muted-foreground">Class {student.classId.toString()}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant={isPresent === true ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handleAttendanceToggle(student.id, true)}
+                              className={isPresent === true ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg' : 'border-2'}
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              Present
+                            </Button>
+                            <Button
+                              variant={isPresent === false ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => handleAttendanceToggle(student.id, false)}
+                              className={isPresent === false ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 shadow-lg' : 'border-2'}
+                            >
+                              <XCircle className="w-4 h-4 mr-1" />
+                              Absent
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    onClick={handleSubmitAttendance}
+                    disabled={markAttendance.isPending || attendanceMap.size === 0}
+                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-premium h-12 text-base font-semibold"
+                  >
+                    {markAttendance.isPending ? 'Submitting...' : `Submit Attendance (${attendanceMap.size} students)`}
+                  </Button>
+                </>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="monthly" className="space-y-4">
-          <Card className="glass-effect border-gray-200/50 dark:border-gray-800/50 shadow-premium">
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Monthly Attendance Summary - 2026
-                </CardTitle>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                  <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                    <SelectTrigger className="w-full sm:w-[180px] border-2">
-                      <SelectValue placeholder="Filter by student" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Students</SelectItem>
-                      {students.map((student) => (
-                        <SelectItem key={student.id.toString()} value={student.id.toString()}>
-                          {student.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                    <SelectTrigger className="w-full sm:w-[180px] border-2">
-                      <SelectValue placeholder="Filter by month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Months</SelectItem>
-                      {MONTHS.map((month) => (
-                        <SelectItem key={month.value} value={month.value.toString()}>
-                          {month.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {summariesLoading ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full" />
-                  ))}
-                </div>
-              ) : filteredMonthlySummaries.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-950/30 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <TrendingUp className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <p className="text-muted-foreground font-medium">No attendance data available for 2026</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {Object.entries(summariesByStudent).map(([studentId, summaries]) => {
-                    const student = students.find(s => s.id.toString() === studentId);
-                    if (!student) return null;
-
-                    // Sort summaries by month
-                    const sortedSummaries = [...summaries].sort((a, b) => Number(a.month) - Number(b.month));
-
-                    return (
-                      <div key={studentId} className="border-2 rounded-xl p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 shadow-md">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white">{student.name}</h3>
-                            <p className="text-sm text-muted-foreground font-medium">Class {student.classId.toString()}</p>
-                          </div>
-                        </div>
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow className="border-b-2">
-                                <TableHead className="font-bold">Month</TableHead>
-                                <TableHead className="font-bold">Total Days</TableHead>
-                                <TableHead className="font-bold">Days Present</TableHead>
-                                <TableHead className="font-bold">Days Absent</TableHead>
-                                <TableHead className="font-bold">Attendance %</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {sortedSummaries.map((summary) => {
-                                const monthName = MONTHS.find(m => m.value === Number(summary.month))?.label || 'Unknown';
-                                const percentage = Number(summary.totalDays) > 0 
-                                  ? Math.round((Number(summary.daysPresent) / Number(summary.totalDays)) * 100)
-                                  : 0;
-
-                                return (
-                                  <TableRow key={summary.month.toString()} className="hover:bg-white/50 dark:hover:bg-gray-800/50 transition-colors">
-                                    <TableCell className="font-semibold">{monthName}</TableCell>
-                                    <TableCell className="font-medium">{summary.totalDays.toString()}</TableCell>
-                                    <TableCell>
-                                      <span className="text-green-600 dark:text-green-400 font-bold">
-                                        {summary.daysPresent.toString()}
-                                      </span>
-                                    </TableCell>
-                                    <TableCell>
-                                      <span className="text-red-600 dark:text-red-400 font-bold">
-                                        {summary.daysAbsent.toString()}
-                                      </span>
-                                    </TableCell>
-                                    <TableCell>
-                                      <Badge variant={percentage >= 75 ? 'default' : 'destructive'} className="shadow-md">
-                                        {percentage}%
-                                      </Badge>
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="summary" className="space-y-6">
+          <MonthlySummary />
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function MonthlySummary() {
+  const [selectedMonth, setSelectedMonth] = useState<number>(1);
+  const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
+  const { data: students = [] } = useGetAllStudents();
+  const { data: summaries = [], isLoading } = useGetMonthlyAttendanceSummaryAllStudents(BigInt(2026));
+
+  const filteredSummaries = summaries.filter((summary) => {
+    const matchesMonth = Number(summary.month) === selectedMonth;
+    const matchesStudent = selectedStudentId === 'all' || summary.studentId.toString() === selectedStudentId;
+    return matchesMonth && matchesStudent;
+  });
+
+  return (
+    <Card className="glass-effect border-gray-200/50 dark:border-gray-800/50 shadow-premium">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <TrendingUp className="w-5 h-5" />
+          Monthly Attendance Summary (2026)
+        </CardTitle>
+        <div className="flex gap-4 mt-4">
+          <div className="flex-1">
+            <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(Number(value))}>
+              <SelectTrigger className="border-2">
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {MONTHS.map((month) => (
+                  <SelectItem key={month.value} value={month.value.toString()}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1">
+            <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+              <SelectTrigger className="border-2">
+                <SelectValue placeholder="Select student" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Students</SelectItem>
+                {students.map((student) => (
+                  <SelectItem key={student.id.toString()} value={student.id.toString()}>
+                    {student.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
+          </div>
+        ) : filteredSummaries.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground font-medium">No attendance records found for this selection</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b-2">
+                  <TableHead className="font-bold">Student</TableHead>
+                  <TableHead className="font-bold">Total Days</TableHead>
+                  <TableHead className="font-bold">Present</TableHead>
+                  <TableHead className="font-bold">Absent</TableHead>
+                  <TableHead className="font-bold">Attendance %</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSummaries.map((summary) => {
+                  const student = students.find((s) => s.id.toString() === summary.studentId.toString());
+                  const attendancePercentage = summary.totalDays > 0
+                    ? ((Number(summary.daysPresent) / Number(summary.totalDays)) * 100).toFixed(1)
+                    : '0.0';
+
+                  return (
+                    <TableRow key={`${summary.studentId}-${summary.month}`} className="hover:bg-orange-50/50 dark:hover:bg-orange-950/20 transition-colors">
+                      <TableCell className="font-semibold">{student?.name || 'Unknown'}</TableCell>
+                      <TableCell>{summary.totalDays.toString()}</TableCell>
+                      <TableCell>
+                        <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-md">
+                          {summary.daysPresent.toString()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-gradient-to-r from-red-500 to-pink-600 text-white border-0 shadow-md">
+                          {summary.daysAbsent.toString()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`${
+                            Number(attendancePercentage) >= 75
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600'
+                              : Number(attendancePercentage) >= 50
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                              : 'bg-gradient-to-r from-red-500 to-pink-600'
+                          } text-white border-0 shadow-md`}
+                        >
+                          {attendancePercentage}%
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

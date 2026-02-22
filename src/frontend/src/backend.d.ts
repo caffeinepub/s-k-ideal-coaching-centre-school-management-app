@@ -74,6 +74,7 @@ export interface backendInterface {
     addTeacherWithCredentials(name: string, subject: string, assignedClasses: Array<ClassId>, uniqueId: string, password: string): Promise<TeacherId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignTeacherRole(teacherPrincipal: Principal, uniqueId: string): Promise<void>;
+    deleteFeeRecord(id: bigint): Promise<void>;
     deleteStudent(id: StudentId): Promise<void>;
     deleteTeacher(id: TeacherId): Promise<void>;
     getAllAttendance(): Promise<Array<AttendanceRecord>>;

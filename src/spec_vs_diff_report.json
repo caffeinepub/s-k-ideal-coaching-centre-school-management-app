@@ -1,0 +1,63 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T07:38:43.462Z",
+  "summary": "The diff implements most PWA requirements including service worker registration, manifest configuration, install prompt, offline indicator, and meta tags. However, several requirements are incompletely addressed: no explicit offline fallback page routing logic, splash screen configuration relies on browser defaults without explicit configuration, and no evidence of comprehensive testing (REQ-26). The implementation is solid for core PWA functionality but lacks full implementation of offline fallback routing and explicit splash screen configuration.",
+  "missing_requirements": [
+    {
+      "id": "REQ-23",
+      "requirement": "Configure splash screen for PWA with School Mitra branding including app icon, name, and background color that displays during app launch on mobile devices",
+      "reason": "While manifest.json includes icons and theme colors that browsers use to generate splash screens, there is no explicit splash screen configuration code or assets. The implementation relies on browser-generated splash screens rather than explicit configuration.",
+      "evidence": [
+        "frontend/public/manifest.json"
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "requirement": "Implement offline fallback page that displays when users navigate to uncached pages while offline, with clear messaging about offline status and instructions to reconnect",
+      "reason": "offline.html exists with proper content, but service-worker.js only serves it for navigation requests when network fails and no cache exists. There is no explicit routing logic to show offline.html when users navigate to uncached routes, and no automatic redirect when connection is restored as specified in acceptance criteria.",
+      "evidence": [
+        "frontend/public/offline.html",
+        "frontend/public/service-worker.js"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "requirement": "Test and verify that all existing School Mitra features (student management, fee tracking, attendance, teacher management, role-based authentication) work correctly in PWA mode both online and offline with cached data",
+      "reason": "No test files, test results, or verification evidence present in the diff. While offline support is added to queries (useQueries.ts shows offline detection), there is no evidence of systematic testing or verification that all features work correctly in PWA mode.",
+      "evidence": []
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "OfflineIndicator component showing network status with yellow alert banner",
+      "reason": "Not explicitly requested in BuildRequest. While it supports offline functionality, the requirement was for offline fallback pages and caching, not a persistent network status indicator component.",
+      "evidence": [
+        "frontend/src/components/OfflineIndicator.tsx",
+        "frontend/src/App.tsx"
+      ]
+    },
+    {
+      "description": "Dismissal persistence with 7-day timeout for PWA install prompt",
+      "reason": "REQ-22 specifies prompt can be dismissed and doesn't reappear immediately, but does not specify a 7-day timeout mechanism with localStorage persistence.",
+      "evidence": [
+        "frontend/src/hooks/usePWAInstall.ts"
+      ]
+    }
+  ],
+  "confidence": 0.75,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/index.html",
+    "frontend/public/manifest.json",
+    "frontend/public/offline.html",
+    "frontend/public/service-worker.js",
+    "frontend/src/App.tsx",
+    "frontend/src/components/OfflineIndicator.tsx",
+    "frontend/src/components/PWAInstallPrompt.tsx",
+    "frontend/src/hooks/usePWAInstall.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/registerServiceWorker.ts",
+    "project_state.json"
+  ]
+}

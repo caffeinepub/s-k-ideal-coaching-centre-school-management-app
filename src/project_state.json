@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 11,
+  "summary": "School management PWA app with multi-role authentication (Admin/Teacher) for managing students, fees, attendance, and teachers, with offline capabilities and installable app experience",
+  "architectural_notes": [
+    "Multi-role authentication system (Admin/Teacher)",
+    "Role-based access control for features",
+    "Google and email authentication for admin signup",
+    "Login credential management system",
+    "Progressive Web App (PWA) implementation with service worker",
+    "Offline caching for previously loaded data",
+    "Installable app experience with web manifest"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- School Mitra app icon with education theme, clean modern design suitable for PWA installation (school-mitra-icon.dim_192x192.png)\n- School Mitra app icon in larger size for high-resolution displays and app stores (school-mitra-icon.dim_512x512.png)\n- School Mitra favicon for browser tabs, simple icon recognizable at small sizes (favicon.dim_32x32.png)",
+  "existing_features": [
+    {
+      "id": "feature-replace-all-instances-of-s-k-ideal-coaching-centre-with-school-mitra-in-the-header-title-manifest-and-throughout-the-application",
+      "title": "Replace all instances of 'S.K Ideal Coaching Centre' with 'School Mitra' in the header, title, manifest, and throughout the application",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-login-interface-with-separate-flows-for-admin-and-teacher-roles-allowing-users-to-authenticate-with-login-id-and-password",
+      "title": "Implement a login interface with separate flows for Admin and Teacher roles, allowing users to authenticate with login ID and password",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-google-and-email-authentication-options-for-admin-signup-and-login",
+      "title": "Add Google and email authentication options for Admin signup and login",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-admin-functionality-to-add-teachers-with-unique-login-ids-and-passwords-that-admin-sets-during-teacher-creation",
+      "title": "Implement Admin functionality to add teachers with unique login IDs and passwords that Admin sets during teacher creation",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restrict-teacher-role-permissions-to-only-edit-fee-records-add-students-and-delete-students",
+      "title": "Restrict Teacher role permissions to only edit fee records, add students, and delete students",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-grant-admin-role-all-teacher-permissions-plus-ability-to-manage-teachers-edit-all-records-and-manage-attendance",
+      "title": "Grant Admin role all Teacher permissions plus ability to manage teachers, edit all records, and manage attendance",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-attendance-management-functionality-accessible-to-admin-role-for-marking-and-viewing-student-attendance",
+      "title": "Add attendance management functionality accessible to Admin role for marking and viewing student attendance",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-and-test-that-all-role-based-permissions-work-correctly-with-no-unauthorized-access-between-admin-and-teacher-roles",
+      "title": "Verify and test that all role-based permissions work correctly with no unauthorized access between Admin and Teacher roles",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-failed-to-load-data-error-that-is-currently-preventing-data-from-loading-in-the-application",
+      "title": "Diagnose and fix the 'Failed to load data' error that is currently preventing data from loading in the application",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-footer-component-to-display-school-mitra-instead-of-s-k-ideal-coaching-centre",
+      "title": "Update the footer component to display 'School Mitra' instead of 'S.K Ideal Coaching Centre'",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-audit-and-replace-all-remaining-instances-of-s-k-ideal-coaching-centre-with-school-mitra-throughout-the-entire-application-including-but-not-limited-to-html-title-tags-meta-descriptions-any-hardcoded-strings-in-components-configuration-files-and-any-other-locations-where-the-old-name-appears",
+      "title": "Audit and replace all remaining instances of 'S.K Ideal Coaching Centre' with 'School Mitra' throughout the entire application, including but not limited to: HTML title tags, meta descriptions, any hardcoded strings in components, configuration files, and any other locations where the old name appears",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-failed-to-load-data-error-that-is-preventing-data-from-loading-in-the-application-checking-for-issues-in-api-calls-actor-initialization-authentication-state-query-hooks-configuration-and-error-boundaries",
+      "title": "Investigate and fix the 'Failed to load data' error that is preventing data from loading in the application, checking for issues in API calls, actor initialization, authentication state, query hooks configuration, and error boundaries",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-review-and-fix-all-react-query-hooks-in-usequeries-ts-to-ensure-proper-error-handling-retry-logic-and-loading-state-management-for-all-data-fetching-operations",
+      "title": "Review and fix all React Query hooks in useQueries.ts to ensure proper error handling, retry logic, and loading state management for all data fetching operations",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-and-debugging-information-to-identify-the-root-cause-of-data-loading-failures-including-console-errors-network-request-details-and-authentication-state",
+      "title": "Add comprehensive error logging and debugging information to identify the root cause of data loading failures, including console errors, network request details, and authentication state",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-test-the-complete-authentication-flow-for-both-admin-internet-identity-and-teacher-username-password-roles-to-ensure-proper-initialization-and-data-access-after-login",
+      "title": "Test the complete authentication flow for both Admin (Internet Identity) and Teacher (username/password) roles to ensure proper initialization and data access after login",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-remove-this-text-that-is-currently-displayed-in-the-header-component",
+      "title": "Remove the 'remove this' text that is currently displayed in the header component",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-failed-to-load-dashboard-data-error-that-is-preventing-the-dashboard-from-displaying-data-properly",
+      "title": "Diagnose and fix the 'failed to load dashboard data' error that is preventing the dashboard from displaying data properly",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-progressive-web-app-pwa-functionality-including-service-worker-registration-offline-caching-strategy-for-static-assets-and-api-responses-and-cache-management-for-optimal-performance",
+      "title": "Implement Progressive Web App (PWA) functionality including service worker registration, offline caching strategy for static assets and API responses, and cache management for optimal performance",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-and-configure-web-app-manifest-manifest-json-with-school-mitra-branding-app-name-description-theme-colors-background-color-display-mode-set-to-standalone-and-start-url",
+      "title": "Create and configure web app manifest (manifest.json) with School Mitra branding, app name, description, theme colors, background color, display mode set to 'standalone', and start URL",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-and-configure-pwa-app-icons-in-multiple-sizes-192x192-512x512-for-installation-on-various-devices-and-create-a-favicon-for-browser-tab-display",
+      "title": "Generate and configure PWA app icons in multiple sizes (192x192, 512x512) for installation on various devices, and create a favicon for browser tab display",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-pwa-install-prompt-component-that-detects-when-the-app-can-be-installed-displays-a-user-friendly-install-button-or-banner-handles-the-beforeinstallprompt-event-and-can-be-dismissed-by-the-user",
+      "title": "Add PWA install prompt component that detects when the app can be installed, displays a user-friendly install button or banner, handles the beforeinstallprompt event, and can be dismissed by the user",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-configure-splash-screen-for-pwa-with-school-mitra-branding-including-app-icon-name-and-background-color-that-displays-during-app-launch-on-mobile-devices",
+      "title": "Configure splash screen for PWA with School Mitra branding including app icon, name, and background color that displays during app launch on mobile devices",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-offline-fallback-page-that-displays-when-users-navigate-to-uncached-pages-while-offline-with-clear-messaging-about-offline-status-and-instructions-to-reconnect",
+      "title": "Implement offline fallback page that displays when users navigate to uncached pages while offline, with clear messaging about offline status and instructions to reconnect",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-meta-tags-to-index-html-for-pwa-support-including-viewport-settings-theme-color-for-browser-ui-apple-touch-icon-for-ios-devices-and-mobile-web-app-capable-tags",
+      "title": "Add meta tags to index.html for PWA support including viewport settings, theme-color for browser UI, apple-touch-icon for iOS devices, and mobile-web-app-capable tags",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-test-and-verify-that-all-existing-school-mitra-features-student-management-fee-tracking-attendance-teacher-management-role-based-authentication-work-correctly-in-pwa-mode-both-online-and-offline-with-cached-data",
+      "title": "Test and verify that all existing School Mitra features (student management, fee tracking, attendance, teacher management, role-based authentication) work correctly in PWA mode both online and offline with cached data",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Replace header with 'School Mitra' branding",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Implement login interface with Admin and Teacher roles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Admin can add/manage teachers and set their login credentials",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Teachers can edit fee records, add/delete students",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Admin has all teacher permissions plus teacher management",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add attendance management feature for both roles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Admin sign up with Google or email authentication",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Verify that the backend actor is properly initialized and accessible, checking the canister deployment status, actor factory configuration, and authentication flow integration",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Convert to Progressive Web App (PWA) with service worker, web manifest, and offline caching",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Make app installable on desktop and mobile devices with custom icon and splash screen",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Implement offline viewing of previously loaded data",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "School Mitra",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

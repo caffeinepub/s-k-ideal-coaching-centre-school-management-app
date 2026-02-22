@@ -174,6 +174,7 @@ export interface backendInterface {
     addTeacherWithCredentials(name: string, subject: string, assignedClasses: Array<ClassId>, uniqueId: string, password: string): Promise<TeacherId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignTeacherRole(teacherPrincipal: Principal, uniqueId: string): Promise<void>;
+    deleteFeeRecord(id: bigint): Promise<void>;
     deleteStudent(id: StudentId): Promise<void>;
     deleteTeacher(id: TeacherId): Promise<void>;
     getAllAttendance(): Promise<Array<AttendanceRecord>>;
@@ -395,6 +396,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignTeacherRole(arg0, arg1);
+            return result;
+        }
+    }
+    async deleteFeeRecord(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteFeeRecord(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteFeeRecord(arg0);
             return result;
         }
     }
