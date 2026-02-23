@@ -1,52 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Update footer to modern clean font style",
+  "title": "Update footer with smaller font size and black text color",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-31",
-      "text": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
+      "id": "REQ-33",
+      "text": "Reduce the font size of the footer text 'Built And Managed By TixtedEdits' to make it more subtle and less prominent",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-user-replace-font",
+          "msg-user-yes"
         ],
         "quotes": [
-          "modern and clean please start building"
+          "i want to replace font of footer with small size",
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "Footer text remains 'Built And Managed By TixtedEdits'",
-        "Font is changed from Pacifico to a modern sans-serif font like Inter, Poppins, or Montserrat",
-        "Text remains readable and professional looking",
-        "Gradient styling and layout are preserved"
+        "Footer text font size is reduced from current size",
+        "Text remains readable but more subtle",
+        "Font size change is applied to the Footer component"
       ]
     },
     {
-      "id": "REQ-32",
-      "text": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
+      "id": "REQ-34",
+      "text": "Change the footer text color to black (#000000 or equivalent) instead of the current gradient styling",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-user-replace-font",
+          "msg-user-yes"
+        ],
+        "quotes": [
+          "the black colour is for new footer",
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "If Pacifico font is only used in footer, remove the Google Fonts import from index.html",
-        "If Pacifico is used elsewhere, keep the import but ensure it's not applied to the footer",
-        "Page load performance is not negatively impacted by unused font imports"
+        "Footer text displays in solid black color",
+        "Gradient styling is removed",
+        "Text color is applied consistently across light and dark themes"
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "text": "Maintain the modern clean font family (Inter, Poppins, or Montserrat) currently applied to the footer text",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-assistant-clarification"
+        ],
+        "quotes": [
+          "Keep the modern clean font (Inter/Poppins/Montserrat) that's currently applied"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Footer continues using the modern clean font family",
+        "No change to font family, only size and color are modified"
       ]
     }
   ],
   "constraints": [
-    "Do not change the footer text content",
-    "Preserve the gradient styling and overall footer layout",
-    "Ensure the new font is web-safe or properly imported"
+    "Do not modify the footer text content 'Built And Managed By TixtedEdits'",
+    "Keep the existing footer component structure in frontend/src/components/Footer.tsx"
   ],
   "nonGoals": [
-    "Changing footer text or copyright information",
-    "Modifying footer size, position, or color scheme",
-    "Adding new footer features or links"
+    "Changing footer layout or positioning",
+    "Modifying copyright year display",
+    "Adding new footer content or links",
+    "Changing fonts in other parts of the application"
   ],
   "imageRequirements": {
     "required": [],

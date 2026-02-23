@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Update the footer font from cursive Pacifico to a modern, clean sans-serif style.
+**Goal:** Update the footer styling to be more subtle with smaller font size and black text color.
 
 **Planned changes:**
-- Replace Pacifico font with a modern sans-serif font (Inter, Poppins, or Montserrat) in the Footer component
-- Remove unused Pacifico font import from index.html if not used elsewhere
-- Preserve footer text content, gradient styling, and layout
+- Reduce the footer text font size to make it less prominent
+- Change the footer text color from gradient to solid black
+- Maintain the existing modern clean font family (Inter, Poppins, or Montserrat)
 
-**User-visible outcome:** The footer displays "Built And Managed By TixtedEdits" in a modern, professional sans-serif font while maintaining its current appearance and styling.
+**User-visible outcome:** The footer "Built And Managed By TixtedEdits" will appear more subtle with smaller, black text while maintaining readability.

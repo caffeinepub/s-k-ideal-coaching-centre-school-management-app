@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 17,
   "summary": "School management PWA app with multi-role authentication (Admin/Teacher) for managing students, fees, attendance, and teachers, with offline capabilities and installable app experience",
   "architectural_notes": [
     "Multi-role authentication system (Admin/Teacher)",
@@ -254,6 +254,30 @@
         "REQ-32"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-reduce-the-font-size-of-the-footer-text-built-and-managed-by-tixtededits-to-make-it-more-subtle-and-less-prominent",
+      "title": "Reduce the font size of the footer text 'Built And Managed By TixtedEdits' to make it more subtle and less prominent",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-footer-text-color-to-black-000000-or-equivalent-instead-of-the-current-gradient-styling",
+      "title": "Change the footer text color to black (#000000 or equivalent) instead of the current gradient styling",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-maintain-the-modern-clean-font-family-inter-poppins-or-montserrat-currently-applied-to-the-footer-text",
+      "title": "Maintain the modern clean font family (Inter, Poppins, or Montserrat) currently applied to the footer text",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -343,6 +367,12 @@
       "reqIds": [
         "REQ-28"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Update footer with smaller font size and black text color while keeping modern clean font",
+      "reqIds": [],
       "status": "pending"
     }
   ],

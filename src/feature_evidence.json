@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-replace-the-pacifico-cursive-font-in-the-footer-component-with-a-modern-clean-font-family-such-as-inter-poppins-or-montserrat-while-keeping-the-text-built-and-managed-by-tixtededits-unchanged",
-      "featureTitle": "Replace the Pacifico cursive font in the Footer component with a modern, clean font family (such as Inter, Poppins, or Montserrat) while keeping the text 'Built And Managed By TixtedEdits' unchanged",
+      "featureId": "feature-reduce-the-font-size-of-the-footer-text-built-and-managed-by-tixtededits-to-make-it-more-subtle-and-less-prominent",
+      "featureTitle": "Reduce the font size of the footer text 'Built And Managed By TixtedEdits' to make it more subtle and less prominent",
       "files": [
-        "frontend/src/components/Footer.tsx",
-        "frontend/tailwind.config.js"
+        "frontend/src/components/Footer.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,15 +17,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-31"
+        "REQ-33"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-or-update-the-pacifico-font-import-from-frontend-index-html-if-it-is-no-longer-used-elsewhere-in-the-application-after-the-footer-font-change",
-      "featureTitle": "Remove or update the Pacifico font import from frontend/index.html if it is no longer used elsewhere in the application after the footer font change",
+      "featureId": "feature-change-the-footer-text-color-to-black-000000-or-equivalent-instead-of-the-current-gradient-styling",
+      "featureTitle": "Change the footer text color to black (#000000 or equivalent) instead of the current gradient styling",
       "files": [
-        "frontend/index.html"
+        "frontend/src/components/Footer.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -38,7 +37,27 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-32"
+        "REQ-34"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-maintain-the-modern-clean-font-family-inter-poppins-or-montserrat-currently-applied-to-the-footer-text",
+      "featureTitle": "Maintain the modern clean font family (Inter, Poppins, or Montserrat) currently applied to the footer text",
+      "files": [
+        "frontend/src/components/Footer.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-35"
       ],
       "confidence": "high"
     }
