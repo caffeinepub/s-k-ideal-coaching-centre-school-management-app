@@ -1,0 +1,151 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-remove-the-quick-actions-section-entirely-from-the-dashboard-overview-component-it-should-not-appear-anywhere-in-the-dashboard",
+      "featureTitle": "Remove the 'Quick Actions' section entirely from the Dashboard Overview component. It should not appear anywhere in the dashboard.",
+      "files": [
+        "frontend/src/components/DashboardOverview.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-transparent-semi-transparent-background-issue-in-the-add-student-modal-form-specifically-in-the-parent-details-section-all-form-fields-labels-and-input-groups-within-the-parent-details-portion-must-render-on-a-fully-opaque-solid-background-with-clear-contrast-and-strong-readable-text",
+      "featureTitle": "Fix the transparent/semi-transparent background issue in the 'Add Student' modal form specifically in the Parent Details section. All form fields, labels, and input groups within the parent details portion must render on a fully opaque, solid background with clear contrast and strong readable text.",
+      "files": [
+        "frontend/src/components/StudentsSection.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-translucent-transparent-background-issues-across-all-management-section-modals-and-cards-student-management-fees-management-teacher-management-and-report-card-section-all-modals-forms-cards-and-content-panels-must-use-fully-opaque-solid-backgrounds-with-strong-contrast-no-glass-effect-or-semi-transparent-layers-should-bleed-through-and-obscure-content",
+      "featureTitle": "Fix translucent/transparent background issues across all management section modals and cards: Student Management, Fees Management, Teacher Management, and Report Card section. All modals, forms, cards, and content panels must use fully opaque, solid backgrounds with strong contrast. No glass-effect or semi-transparent layers should bleed through and obscure content.",
+      "files": [
+        "frontend/src/components/AttendanceSection.tsx",
+        "frontend/src/components/FeesSection.tsx",
+        "frontend/src/components/ReportCardsSection.tsx",
+        "frontend/src/components/StudentsSection.tsx",
+        "frontend/src/components/TeachersSection.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-fees-management-section-remove-the-mark-as-paid-button-option-entirely-and-replace-it-with-a-clear-paid-unpaid-toggle-control-on-each-fee-record-row-the-toggle-should-allow-switching-a-fee-record-between-paid-and-unpaid-status-with-a-single-interaction-with-distinct-visual-states-for-each-status-using-solid-high-contrast-colors-e-g-bold-green-for-paid-bold-red-orange-for-unpaid",
+      "featureTitle": "In the Fees Management section, remove the 'Mark as Paid' button/option entirely and replace it with a clear 'Paid / Unpaid' toggle control on each fee record row. The toggle should allow switching a fee record between paid and unpaid status with a single interaction, with distinct visual states for each status using solid, high-contrast colors (e.g., bold green for Paid, bold red/orange for Unpaid).",
+      "files": [
+        "frontend/src/components/FeesSection.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-redesign-the-entire-application-s-visual-style-with-high-quality-graphics-solid-bold-colors-and-strong-iconography-apply-the-following-across-all-sections-and-the-dashboard-1-replace-all-glass-effect-translucent-or-low-opacity-ui-surfaces-with-solid-richly-colored-backgrounds-and-cards-2-use-bold-solid-color-palettes-deep-navy-emerald-green-amber-and-white-consistently-across-headers-section-cards-stat-tiles-buttons-and-badges-3-replace-generic-or-placeholder-icons-with-high-quality-solid-svg-icons-using-a-library-like-heroicons-or-lucide-for-all-navigation-tabs-action-buttons-section-headers-and-status-indicators-4-apply-strong-typographic-hierarchy-with-bold-headings-and-clear-subtext-5-add-subtle-but-rich-visual-texture-or-gradient-accents-to-section-headers-and-stat-cards-to-elevate-the-overall-aesthetic-without-introducing-transparency-issues",
+      "featureTitle": "Redesign the entire application's visual style with high-quality graphics, solid bold colors, and strong iconography. Apply the following across all sections and the dashboard: (1) Replace all glass-effect, translucent, or low-opacity UI surfaces with solid, richly colored backgrounds and cards. (2) Use bold, solid color palettes — deep navy, emerald green, amber, and white — consistently across headers, section cards, stat tiles, buttons, and badges. (3) Replace generic or placeholder icons with high-quality solid SVG icons (using a library like Heroicons or Lucide) for all navigation tabs, action buttons, section headers, and status indicators. (4) Apply strong typographic hierarchy with bold headings and clear subtext. (5) Add subtle but rich visual texture or gradient accents to section headers and stat cards to elevate the overall aesthetic without introducing transparency issues.",
+      "files": [
+        "frontend/src/components/ActivityLogSection.tsx",
+        "frontend/src/components/AttendanceSection.tsx",
+        "frontend/src/components/DashboardOverview.tsx",
+        "frontend/src/components/FeesSection.tsx",
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/ReportCardsSection.tsx",
+        "frontend/src/components/StudentsSection.tsx",
+        "frontend/src/components/TeachersSection.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/Dashboard.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-perform-a-comprehensive-review-and-fix-of-all-existing-ui-issues-across-every-section-of-the-app-this-includes-misaligned-form-elements-broken-layouts-inconsistent-spacing-unreadable-text-over-backgrounds-modal-overflow-issues-missing-error-empty-states-and-any-other-visual-or-functional-bugs-found-in-dashboardoverview-studentssection-feessection-teacherssection-attendancesection-reportcardssection-activitylogsection-header-and-footer-components",
+      "featureTitle": "Perform a comprehensive review and fix of all existing UI issues across every section of the app. This includes: misaligned form elements, broken layouts, inconsistent spacing, unreadable text over backgrounds, modal overflow issues, missing error/empty states, and any other visual or functional bugs found in DashboardOverview, StudentsSection, FeesSection, TeachersSection, AttendanceSection, ReportCardsSection, ActivityLogSection, Header, and Footer components.",
+      "files": [
+        "frontend/src/components/ActivityLogSection.tsx",
+        "frontend/src/components/AttendanceSection.tsx",
+        "frontend/src/components/DashboardOverview.tsx",
+        "frontend/src/components/FeesSection.tsx",
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/ReportCardsSection.tsx",
+        "frontend/src/components/StudentsSection.tsx",
+        "frontend/src/components/TeachersSection.tsx",
+        "frontend/src/pages/Dashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

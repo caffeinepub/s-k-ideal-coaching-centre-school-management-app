@@ -1,0 +1,241 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Dashboard & UI Overhaul: Remove Quick Actions, Fix Backgrounds, Fees Toggle, High-Quality Graphics",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Remove the 'Quick Actions' section entirely from the Dashboard Overview component",
+      "acceptanceCriteria": [
+        "The 'Quick Actions' section is fully removed from DashboardOverview.tsx",
+        "No quick actions buttons or cards appear on the dashboard tab",
+        "Remaining dashboard content fills the layout cleanly without empty space"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DashboardOverview.tsx",
+          "operation": "modify",
+          "description": "Remove the Quick Actions section and all associated JSX elements, including any buttons or cards labeled as quick actions. Ensure the stats grid and hero banner remain and fill the layout properly without leaving empty space."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Fix the transparent/semi-transparent background issue in the 'Add Student' modal form's Parent Details section",
+      "acceptanceCriteria": [
+        "Parent details section in the Add Student modal has a fully opaque, solid background",
+        "All input fields and labels are clearly visible with no transparency artifacts",
+        "The section is visually distinct from the modal backdrop"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StudentsSection.tsx",
+          "operation": "modify",
+          "description": "In the Add/Edit Student modal, locate the Parent Details section (parent contact field and any related inputs). Replace any translucent or glass-effect background classes (e.g., backdrop-blur, bg-opacity, bg-white/50) with fully opaque solid background classes (e.g., bg-white, bg-gray-50). Ensure all input fields, labels, and surrounding containers use solid, high-contrast backgrounds. Verify that the parent details section is visually distinct from the modal backdrop."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Fix translucent/transparent background issues across all management section modals and cards",
+      "acceptanceCriteria": [
+        "All section modals (StudentsSection, FeesSection, TeachersSection, ReportCardsSection) use fully opaque solid backgrounds",
+        "All list cards and table rows have solid, non-transparent backgrounds",
+        "Form inputs, labels, and buttons are fully visible with no bleed-through from backgrounds",
+        "Glass/translucent CSS classes are replaced with solid equivalents in all affected components"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StudentsSection.tsx",
+          "operation": "modify",
+          "description": "Replace all translucent/glass-effect background classes (backdrop-blur, bg-opacity, bg-white/10, bg-white/50, etc.) with fully opaque solid backgrounds (bg-white, bg-gray-50, bg-gray-100). Ensure modals, cards, form containers, input fields, and list items all use solid, high-contrast backgrounds with no transparency."
+        },
+        {
+          "path": "frontend/src/components/FeesSection.tsx",
+          "operation": "modify",
+          "description": "Replace all translucent/glass-effect background classes (backdrop-blur, bg-opacity, bg-white/10, bg-white/50, etc.) with fully opaque solid backgrounds (bg-white, bg-gray-50, bg-gray-100). Ensure modals, cards, form containers, input fields, and list items all use solid, high-contrast backgrounds with no transparency."
+        },
+        {
+          "path": "frontend/src/components/TeachersSection.tsx",
+          "operation": "modify",
+          "description": "Replace all translucent/glass-effect background classes (backdrop-blur, bg-opacity, bg-white/10, bg-white/50, etc.) with fully opaque solid backgrounds (bg-white, bg-gray-50, bg-gray-100). Ensure modals, cards, form containers, input fields, and list items all use solid, high-contrast backgrounds with no transparency."
+        },
+        {
+          "path": "frontend/src/components/ReportCardsSection.tsx",
+          "operation": "modify",
+          "description": "Replace all translucent/glass-effect background classes (backdrop-blur, bg-opacity, bg-white/10, bg-white/50, etc.) with fully opaque solid backgrounds (bg-white, bg-gray-50, bg-gray-100). Ensure modals, cards, form containers, input fields, and list items all use solid, high-contrast backgrounds with no transparency."
+        },
+        {
+          "path": "frontend/src/components/AttendanceSection.tsx",
+          "operation": "modify",
+          "description": "Replace all translucent/glass-effect background classes (backdrop-blur, bg-opacity, bg-white/10, bg-white/50, etc.) with fully opaque solid backgrounds (bg-white, bg-gray-50, bg-gray-100). Ensure modals, cards, form containers, input fields, and list items all use solid, high-contrast backgrounds with no transparency."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Remove or comment out any global CSS custom properties or classes that define glass effects, backdrop-blur, or semi-transparent backgrounds (e.g., --glass-bg, --glass-border, backdrop-filter). Replace them with solid color equivalents or remove them entirely to prevent reintroduction of transparency issues."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "In the Fees Management section, remove the 'Mark as Paid' button and replace it with a clear 'Paid / Unpaid' toggle control on each fee record row",
+      "acceptanceCriteria": [
+        "'Mark as Paid' button is fully removed from FeesSection",
+        "Each fee record row displays a Paid/Unpaid toggle (e.g., pill toggle or switch)",
+        "Toggling updates the fee record status via the backend mutation",
+        "Paid state shows a bold solid green indicator; Unpaid shows bold solid red or orange",
+        "Toggle state is persisted and reflects the actual backend state on reload"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/FeesSection.tsx",
+          "operation": "modify",
+          "description": "Remove the 'Mark as Paid' button from the fee record list. For each fee record row, add a Paid/Unpaid toggle control (e.g., a pill-style toggle button or switch component). When clicked, call the useToggleFeePaymentStatus mutation from useQueries.ts with the fee record ID to toggle the isPaid status. Display the toggle with bold solid green background/text for Paid and bold solid red or orange for Unpaid. Ensure the toggle reflects the current isPaid state from the backend and updates the UI immediately after the mutation succeeds."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Ensure the useToggleFeePaymentStatus mutation hook is properly defined and calls actor.toggleFeePaymentStatus(id). After a successful toggle, invalidate the 'fees' query key to refetch the updated fee records. If the hook does not exist, add it following the existing mutation patterns in this file."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Redesign the entire application's visual style with high-quality graphics, solid bold colors, and strong iconography",
+      "acceptanceCriteria": [
+        "All UI surfaces (cards, modals, sidebars, headers) use solid opaque backgrounds with rich colors",
+        "A consistent bold color palette is applied throughout: headers, buttons, badges, and stats all use strong, non-muted colors",
+        "All section navigation tabs and action buttons display solid, recognizable icons",
+        "Section headers and stat tiles have a premium look with bold typography and color accents",
+        "No translucent or glass-effect backgrounds remain in the final UI"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Define a bold, solid color palette using CSS custom properties: deep navy (e.g., #1e3a8a), emerald green (e.g., #059669), amber (e.g., #f59e0b), and white. Replace any glass-effect, translucent, or low-opacity variables with these solid, rich colors. Add gradient accent variables for section headers and stat cards (e.g., linear-gradient from deep navy to emerald green). Remove or replace any backdrop-blur or transparency-based styles. Ensure the palette is consistent across light and dark mode variables if applicable."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend the Tailwind theme with the new bold color palette (navy, emerald, amber) and ensure these colors are mapped to semantic keys like 'primary', 'accent', 'success', 'warning'. Add or update font-weight and typography utilities to support bold headings. Ensure border radius and shadow utilities support a premium, polished look."
+        },
+        {
+          "path": "frontend/src/components/DashboardOverview.tsx",
+          "operation": "modify",
+          "description": "Apply the new bold color palette to stat cards: use solid deep navy, emerald green, amber, and white backgrounds with strong contrast. Update stat card typography to use bold headings (font-bold or font-extrabold). Replace any glass-effect or translucent backgrounds with solid colors. Add subtle gradient accents to stat card headers or borders. Integrate the generated dashboard-hero-banner image (frontend/public/assets/generated/dashboard-hero-banner.dim_1200x300.png) as a static asset in the hero section with appropriate styling. Ensure all icons are replaced with solid, recognizable SVG icons from a library like Heroicons or Lucide (if not already in use, import and use them for stats and section icons)."
+        },
+        {
+          "path": "frontend/src/pages/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Update the tab navigation bar to use bold solid colors for active/inactive states (e.g., active tab with emerald green background, inactive with navy or gray). Replace any translucent or glass-effect backgrounds with solid, opaque colors. Ensure each tab displays a high-quality solid icon (from Heroicons or Lucide). Apply bold typography to tab labels. Add a gradient accent or border to the active tab for a premium look."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Apply the bold color palette to the header: use a solid deep navy or emerald green background with white text. Ensure the School Mitra logo is displayed using the generated school-logo-icon image (frontend/public/assets/generated/school-logo-icon.dim_256x256.png). Update the logout button and user profile display to use bold, solid colors with high contrast. Replace any translucent or glass-effect backgrounds. Add a solid border or shadow for depth."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Apply the bold color palette to the footer: use a solid navy or gray background with white or amber text. Ensure consistent typography with the rest of the app. Remove any glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/StudentsSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, cards, and buttons (navy, emerald, amber). Use solid, recognizable icons for add/edit/delete actions (from Heroicons or Lucide). Ensure stat badges and status indicators use bold solid colors (green for active/admitted, red/orange for inactive). Update typography to bold headings and clear subtext. Add gradient accents to section headers if appropriate. Remove any remaining glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/FeesSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, cards, and buttons (navy, emerald, amber). Use solid, recognizable icons for add/edit actions. Ensure paid/unpaid toggles use bold solid green for Paid and bold solid red or orange for Unpaid. Update typography to bold headings and clear subtext. Add gradient accents to section headers if appropriate. Remove any remaining glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/TeachersSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, cards, and buttons (navy, emerald, amber). Use solid, recognizable icons for add/edit/delete actions. Ensure teacher cards have a premium look with bold typography and solid backgrounds. Add gradient accents to section headers if appropriate. Remove any remaining glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/ReportCardsSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, cards, and buttons (navy, emerald, amber). Use solid, recognizable icons for add/edit actions. Ensure grade badges use bold solid colors (green for high grades, amber for medium, red for low). Update typography to bold headings and clear subtext. Add gradient accents to section headers if appropriate. Remove any remaining glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/AttendanceSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, cards, and buttons (navy, emerald, amber). Use solid, recognizable icons for attendance status (present/absent). Ensure attendance status indicators use bold solid colors (green for present, red for absent). Update typography to bold headings and clear subtext. Add gradient accents to section headers if appropriate. Remove any remaining glass-effect or translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/components/ActivityLogSection.tsx",
+          "operation": "modify",
+          "description": "Apply bold solid colors to section headers, table headers, and role badges (navy, emerald, amber). Use solid, recognizable icons for filter controls and action types. Ensure role badges use bold solid colors consistently. Update typography to bold headings and clear subtext. Remove any remaining glass-effect or translucent backgrounds."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Perform a comprehensive review and fix of all existing UI issues across every section of the app",
+      "acceptanceCriteria": [
+        "All modals open and close without layout overflow or clipping",
+        "All form inputs are properly labeled, aligned, and styled consistently",
+        "Empty states and loading states are displayed in all sections",
+        "No text is rendered unreadably over a background of similar color",
+        "Navigation tabs and section headers are consistently styled and aligned",
+        "Footer and Header render correctly at all viewport sizes"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DashboardOverview.tsx",
+          "operation": "modify",
+          "description": "Review and fix any layout issues: ensure stat cards are consistently sized and aligned, loading states are clear, error states include retry buttons, and the hero banner scales properly on all viewport sizes. Ensure text contrast is strong and readable against all backgrounds."
+        },
+        {
+          "path": "frontend/src/components/StudentsSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure modals do not overflow or clip content, all form inputs are properly labeled and aligned, empty states (e.g., 'No students found') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled. Verify that the add/edit modal form fields are properly spaced and responsive."
+        },
+        {
+          "path": "frontend/src/components/FeesSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure modals do not overflow or clip content, all form inputs are properly labeled and aligned, empty states (e.g., 'No fee records found') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled. Verify that the add/edit modal form fields are properly spaced and responsive. Ensure the new Paid/Unpaid toggle is consistently styled and aligned in all fee record rows."
+        },
+        {
+          "path": "frontend/src/components/TeachersSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure modals do not overflow or clip content, all form inputs are properly labeled and aligned, empty states (e.g., 'No teachers found') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled. Verify that the add/edit modal form fields (including assigned classes and credentials) are properly spaced and responsive."
+        },
+        {
+          "path": "frontend/src/components/AttendanceSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure the attendance marking interface is properly aligned and responsive, date picker and class selector are clearly labeled, empty states (e.g., 'No attendance records') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled."
+        },
+        {
+          "path": "frontend/src/components/ReportCardsSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure modals do not overflow or clip content (especially with dynamic subject-marks rows), all form inputs are properly labeled and aligned, empty states (e.g., 'No report cards found') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled. Verify that the add/edit modal form fields are properly spaced and responsive, including dynamic subject rows."
+        },
+        {
+          "path": "frontend/src/components/ActivityLogSection.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure the table is responsive and does not clip content on small screens, filters and search inputs are properly aligned, empty states (e.g., 'No activity logs found') and loading states are displayed, text is readable with high contrast, and the section header is consistently styled."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure the header renders correctly at all viewport sizes (mobile, tablet, desktop), the logo and user profile display are properly aligned, the logout button is accessible and styled consistently, and text is readable with high contrast. Verify that the loading indicator does not cause layout shifts."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure the footer renders correctly at all viewport sizes, text is centered and readable with high contrast, and the layout is consistent with the rest of the app."
+        },
+        {
+          "path": "frontend/src/pages/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Review and fix all UI issues: ensure the tab navigation bar is responsive and accessible on all viewport sizes, active/inactive tab states are clearly distinguished, tabs do not overflow or clip, and section content below the tabs renders correctly without layout shifts."
+        }
+      ]
+    }
+  ]
+}

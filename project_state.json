@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "School management dashboard app with student, fees, teacher management, and report card sections. Focus on high-quality graphics, solid logos, and strong colors throughout.",
+  "architectural_notes": [
+    "UI must use solid, opaque backgrounds — no transparent or translucent elements in management sections",
+    "Design language: high-quality graphics, solid logos, strong/vivid colors throughout"
+  ],
+  "known_issues": [
+    "Parent details in 'Add Student' form showing with transparent background",
+    "Management sections (student, fees, teacher, report card) showing translucent backgrounds"
+  ],
+  "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- High-quality school dashboard hero banner with deep navy and emerald green gradient, subtle geometric pattern overlay, no text (dashboard-hero-banner.dim_1200x300.png)\n- Solid bold school crest / logo mark icon in emerald green and gold on transparent background (school-logo-icon.dim_256x256.png)",
+  "existing_features": [
+    {
+      "id": "feature-remove-the-quick-actions-section-entirely-from-the-dashboard-overview-component-it-should-not-appear-anywhere-in-the-dashboard",
+      "title": "Remove the 'Quick Actions' section entirely from the Dashboard Overview component. It should not appear anywhere in the dashboard.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-transparent-semi-transparent-background-issue-in-the-add-student-modal-form-specifically-in-the-parent-details-section-all-form-fields-labels-and-input-groups-within-the-parent-details-portion-must-render-on-a-fully-opaque-solid-background-with-clear-contrast-and-strong-readable-text",
+      "title": "Fix the transparent/semi-transparent background issue in the 'Add Student' modal form specifically in the Parent Details section. All form fields, labels, and input groups within the parent details portion must render on a fully opaque, solid background with clear contrast and strong readable text.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-translucent-transparent-background-issues-across-all-management-section-modals-and-cards-student-management-fees-management-teacher-management-and-report-card-section-all-modals-forms-cards-and-content-panels-must-use-fully-opaque-solid-backgrounds-with-strong-contrast-no-glass-effect-or-semi-transparent-layers-should-bleed-through-and-obscure-content",
+      "title": "Fix translucent/transparent background issues across all management section modals and cards: Student Management, Fees Management, Teacher Management, and Report Card section. All modals, forms, cards, and content panels must use fully opaque, solid backgrounds with strong contrast. No glass-effect or semi-transparent layers should bleed through and obscure content.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-fees-management-section-remove-the-mark-as-paid-button-option-entirely-and-replace-it-with-a-clear-paid-unpaid-toggle-control-on-each-fee-record-row-the-toggle-should-allow-switching-a-fee-record-between-paid-and-unpaid-status-with-a-single-interaction-with-distinct-visual-states-for-each-status-using-solid-high-contrast-colors-e-g-bold-green-for-paid-bold-red-orange-for-unpaid",
+      "title": "In the Fees Management section, remove the 'Mark as Paid' button/option entirely and replace it with a clear 'Paid / Unpaid' toggle control on each fee record row. The toggle should allow switching a fee record between paid and unpaid status with a single interaction, with distinct visual states for each status using solid, high-contrast colors (e.g., bold green for Paid, bold red/orange for Unpaid).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-entire-application-s-visual-style-with-high-quality-graphics-solid-bold-colors-and-strong-iconography-apply-the-following-across-all-sections-and-the-dashboard-1-replace-all-glass-effect-translucent-or-low-opacity-ui-surfaces-with-solid-richly-colored-backgrounds-and-cards-2-use-bold-solid-color-palettes-deep-navy-emerald-green-amber-and-white-consistently-across-headers-section-cards-stat-tiles-buttons-and-badges-3-replace-generic-or-placeholder-icons-with-high-quality-solid-svg-icons-using-a-library-like-heroicons-or-lucide-for-all-navigation-tabs-action-buttons-section-headers-and-status-indicators-4-apply-strong-typographic-hierarchy-with-bold-headings-and-clear-subtext-5-add-subtle-but-rich-visual-texture-or-gradient-accents-to-section-headers-and-stat-cards-to-elevate-the-overall-aesthetic-without-introducing-transparency-issues",
+      "title": "Redesign the entire application's visual style with high-quality graphics, solid bold colors, and strong iconography. Apply the following across all sections and the dashboard: (1) Replace all glass-effect, translucent, or low-opacity UI surfaces with solid, richly colored backgrounds and cards. (2) Use bold, solid color palettes — deep navy, emerald green, amber, and white — consistently across headers, section cards, stat tiles, buttons, and badges. (3) Replace generic or placeholder icons with high-quality solid SVG icons (using a library like Heroicons or Lucide) for all navigation tabs, action buttons, section headers, and status indicators. (4) Apply strong typographic hierarchy with bold headings and clear subtext. (5) Add subtle but rich visual texture or gradient accents to section headers and stat cards to elevate the overall aesthetic without introducing transparency issues.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-perform-a-comprehensive-review-and-fix-of-all-existing-ui-issues-across-every-section-of-the-app-this-includes-misaligned-form-elements-broken-layouts-inconsistent-spacing-unreadable-text-over-backgrounds-modal-overflow-issues-missing-error-empty-states-and-any-other-visual-or-functional-bugs-found-in-dashboardoverview-studentssection-feessection-teacherssection-attendancesection-reportcardssection-activitylogsection-header-and-footer-components",
+      "title": "Perform a comprehensive review and fix of all existing UI issues across every section of the app. This includes: misaligned form elements, broken layouts, inconsistent spacing, unreadable text over backgrounds, modal overflow issues, missing error/empty states, and any other visual or functional bugs found in DashboardOverview, StudentsSection, FeesSection, TeachersSection, AttendanceSection, ReportCardsSection, ActivityLogSection, Header, and Footer components.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Remove 'Quick Actions' option from dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Fix transparent/translucent background issue in 'Add Student' parent details section and all management sections (student, fees, teacher, report card)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Remove 'Mark as Paid' option from fees section and replace with a 'Paid/Unpaid' toggle feature",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Apply high-quality graphics, solid logos, and strong/solid colors across all sections of the app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Recheck all existing issues and fix them across the entire app",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "School Management Dashboard",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

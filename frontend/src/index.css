@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: oklch(0.98 0.005 240);
+    --foreground: oklch(0.15 0.02 240);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0.02 240);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.15 0.02 240);
+    --primary: oklch(0.35 0.15 240);
+    --primary-foreground: oklch(0.98 0.005 240);
+    --secondary: oklch(0.94 0.02 240);
+    --secondary-foreground: oklch(0.25 0.05 240);
+    --muted: oklch(0.94 0.01 240);
+    --muted-foreground: oklch(0.55 0.03 240);
+    --accent: oklch(0.55 0.18 160);
+    --accent-foreground: oklch(0.98 0.005 240);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.98 0.005 240);
+    --border: oklch(0.88 0.02 240);
+    --input: oklch(0.88 0.02 240);
+    --ring: oklch(0.35 0.15 240);
+    --success: oklch(0.52 0.18 160);
+    --success-foreground: oklch(0.98 0.005 240);
+    --warning: oklch(0.72 0.18 75);
+    --warning-foreground: oklch(0.15 0.02 240);
+    --radius: 0.5rem;
+
+    /* Bold palette */
+    --navy: oklch(0.28 0.12 240);
+    --navy-dark: oklch(0.20 0.10 240);
+    --emerald: oklch(0.52 0.18 160);
+    --emerald-dark: oklch(0.42 0.16 160);
+    --amber: oklch(0.72 0.18 75);
+    --amber-dark: oklch(0.62 0.16 75);
+    --crimson: oklch(0.52 0.22 25);
+  }
+
+  .dark {
+    --background: oklch(0.12 0.02 240);
+    --foreground: oklch(0.95 0.005 240);
+    --card: oklch(0.18 0.03 240);
+    --card-foreground: oklch(0.95 0.005 240);
+    --popover: oklch(0.18 0.03 240);
+    --popover-foreground: oklch(0.95 0.005 240);
+    --primary: oklch(0.65 0.15 240);
+    --primary-foreground: oklch(0.12 0.02 240);
+    --secondary: oklch(0.25 0.04 240);
+    --secondary-foreground: oklch(0.85 0.02 240);
+    --muted: oklch(0.25 0.03 240);
+    --muted-foreground: oklch(0.65 0.03 240);
+    --accent: oklch(0.55 0.18 160);
+    --accent-foreground: oklch(0.98 0.005 240);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.98 0.005 240);
+    --border: oklch(0.28 0.04 240);
+    --input: oklch(0.28 0.04 240);
+    --ring: oklch(0.65 0.15 240);
+    --success: oklch(0.52 0.18 160);
+    --success-foreground: oklch(0.98 0.005 240);
+    --warning: oklch(0.72 0.18 75);
+    --warning-foreground: oklch(0.15 0.02 240);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  /* Solid modal backgrounds - no transparency */
+  .solid-modal-content {
+    background-color: oklch(1 0 0) !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Section header gradient - solid, no transparency */
+  .section-header-navy {
+    background: linear-gradient(135deg, oklch(0.28 0.12 240) 0%, oklch(0.35 0.15 240) 100%);
+    color: oklch(0.98 0.005 240);
+  }
+
+  .section-header-emerald {
+    background: linear-gradient(135deg, oklch(0.42 0.16 160) 0%, oklch(0.55 0.18 160) 100%);
+    color: oklch(0.98 0.005 240);
+  }
+
+  .section-header-amber {
+    background: linear-gradient(135deg, oklch(0.62 0.16 75) 0%, oklch(0.72 0.18 75) 100%);
+    color: oklch(0.15 0.02 240);
+  }
+
+  /* Stat card styles */
+  .stat-card-navy {
+    background: linear-gradient(135deg, oklch(0.28 0.12 240) 0%, oklch(0.38 0.14 240) 100%);
+    color: white;
+    border: none;
+  }
+
+  .stat-card-emerald {
+    background: linear-gradient(135deg, oklch(0.42 0.16 160) 0%, oklch(0.55 0.18 160) 100%);
+    color: white;
+    border: none;
+  }
+
+  .stat-card-amber {
+    background: linear-gradient(135deg, oklch(0.62 0.16 75) 0%, oklch(0.72 0.18 75) 100%);
+    color: oklch(0.15 0.02 240);
+    border: none;
+  }
+
+  .stat-card-crimson {
+    background: linear-gradient(135deg, oklch(0.45 0.22 25) 0%, oklch(0.55 0.22 25) 100%);
+    color: white;
+    border: none;
+  }
+
+  /* Paid/Unpaid toggle */
+  .toggle-paid {
+    background-color: oklch(0.52 0.18 160);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .toggle-paid:hover {
+    background-color: oklch(0.42 0.16 160);
+  }
+
+  .toggle-unpaid {
+    background-color: oklch(0.55 0.22 25);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .toggle-unpaid:hover {
+    background-color: oklch(0.45 0.20 25);
+  }
+
+  /* Premium card */
+  .premium-card {
+    background: oklch(1 0 0);
+    border: 1px solid oklch(0.88 0.02 240);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .premium-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+  }
+
+  /* Tab active state */
+  .tab-active {
+    background: linear-gradient(135deg, oklch(0.28 0.12 240) 0%, oklch(0.38 0.14 240) 100%);
+    color: white;
+    font-weight: 700;
+    border-radius: 0.5rem;
+  }
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+
+  .shimmer-loading {
+    background: linear-gradient(90deg, oklch(0.92 0.01 240) 25%, oklch(0.96 0.005 240) 50%, oklch(0.92 0.01 240) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
